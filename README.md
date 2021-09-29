@@ -78,4 +78,4 @@ public async Task DoSomethingAsync()
 
 From this point forward, we'll have an `IDbConnection` ready to use.
 
-> All `IDbConnection` instances should be properly disposed after use. Most of the ADO implementations will pool connections and not properly disposing the connections can lead to exceeding the number of open connections.
+> Note: All `IDbConnection` instances should be properly disposed after use. Most of the ADO implementations will pool connections and not properly disposing the connections can lead to exceeding the number of open connections.
