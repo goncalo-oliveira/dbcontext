@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>System.Data</RootNamespace>
+    <AssemblyName>faactory.dbcontext.sqlclient</AssemblyName>
+    <PackageId>Faactory.DbContext.SqlClient</PackageId>
+    <Version>0.1</Version>
+    <Authors>Goncalo Oliveira</Authors>
+    <Description>DbContext SqlServer provider</Description>
+    <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageIcon>faactory.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\core\core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../faactory.png" Pack="true" PackagePath="/"/>
+  </ItemGroup>
+
+</Project>
