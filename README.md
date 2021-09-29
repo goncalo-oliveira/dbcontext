@@ -54,7 +54,7 @@ public class Example
 
     public async Task DoSomethingAsync()
     {
-        using ( var connection = dbContext.GetDbConnection() )
+        using ( var connection = mydb.GetDbConnection() )
         {
             await connection.OpenAsync();
 
@@ -64,18 +64,18 @@ public class Example
 }
 ```
 
-We can also construct a the connection and open it directly
+We can also construct the connection and open it directly
 
 ```csharp
 public async Task DoSomethingAsync()
 {
-    using ( var connection = await dbContext.OpenAsync() )
+    using ( var connection = await mydb.OpenAsync() )
     {
         ...
     }
 }
 ```
 
-From this point forward, we'll have an `IDbConnection` ready to use.
+From this point forward, we'll have an `IDbConnection` instance ready to use.
 
 > Note: All `IDbConnection` instances should be properly disposed after use. Most of the ADO implementations will pool connections and not properly disposing the connections can lead to exceeding the number of open connections.
