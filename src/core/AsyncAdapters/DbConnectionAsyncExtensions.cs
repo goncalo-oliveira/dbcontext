@@ -11,7 +11,7 @@ namespace System.Data
         private static readonly ConcurrentDictionary<Type, ConnectionAdapter> ConnectionAdapters =
             new ConcurrentDictionary<Type, ConnectionAdapter>();
 
-        public static Task OpenAsync( this IDbConnection connection )
+        public static Task OpenAsync( this IDbConnection connection, CancellationToken cancellationToken = default( CancellationToken ) )
         {
             if ( connection == null )
             {
@@ -22,35 +22,62 @@ namespace System.Data
 
             if ( dbConnection != null )
             {
-                return dbConnection.OpenAsync();
-            }
-
-            var adapter = ConnectionAdapters.GetOrAdd( 
-                connection.GetType(),
-                type => new ConnectionAdapter( type ) );
-
-            return adapter.OpenAsync( connection );
-        }
-
-        public static Task OpenAsync( this IDbConnection connection, CancellationToken token )
-        {
-            if ( connection == null )
-            {
-                throw new ArgumentNullException( nameof( connection ) );
-            }
-
-            var dbConnection = connection as DbConnection;
-
-            if ( dbConnection != null )
-            {
-                return dbConnection.OpenAsync( token );
+                return dbConnection.OpenAsync( cancellationToken );
             }
 
             var adapter = ConnectionAdapters.GetOrAdd(
                 connection.GetType(),
-                type => new ConnectionAdapter( type ) );
+                type => new ConnectionAdapter( type )
+            );
 
-            return adapter.OpenAsyncToken( connection, token );
+            return adapter.OpenAsync( connection, cancellationToken );
+        }
+
+        public static async ValueTask<IDbTransaction> BeginTransactionAsync( this IDbConnection connection
+            , CancellationToken cancellationToken = default( CancellationToken ) )
+        {
+            if ( connection == null )
+            {
+                throw new ArgumentNullException( nameof( connection ) );
+            }
+
+            var dbConnection = connection as DbConnection;
+
+            if ( dbConnection != null )
+            {
+                return await dbConnection.BeginTransactionAsync( cancellationToken );
+            }
+
+            var adapter = ConnectionAdapters.GetOrAdd(
+                connection.GetType(),
+                type => new ConnectionAdapter( type )
+            );
+
+            return await adapter.BeginTransactionAsync( connection, cancellationToken );
+        }
+
+        public static async ValueTask<IDbTransaction> BeginTransactionAsync( this IDbConnection connection
+            , IsolationLevel isolationLevel
+            , CancellationToken cancellationToken = default( CancellationToken ) )
+        {
+            if ( connection == null )
+            {
+                throw new ArgumentNullException( nameof( connection ) );
+            }
+
+            var dbConnection = connection as DbConnection;
+
+            if ( dbConnection != null )
+            {
+                return await dbConnection.BeginTransactionAsync( isolationLevel, cancellationToken );
+            }
+
+            var adapter = ConnectionAdapters.GetOrAdd(
+                connection.GetType(),
+                type => new ConnectionAdapter( type )
+            );
+
+            return await adapter.BeginTransactionIsolationAsync( connection, isolationLevel, cancellationToken );
         }
     }
 }

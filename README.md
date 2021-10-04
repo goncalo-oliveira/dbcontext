@@ -79,3 +79,40 @@ public async Task DoSomethingAsync()
 From this point forward, we'll have an `IDbConnection` instance ready to use.
 
 > Note: All `IDbConnection` instances should be properly disposed after use. Most of the ADO implementations will pool connections and not properly disposing the connections can lead to exceeding the number of open connections.
+
+## Transactions
+
+As an alternative to the `IDbConnection.BeginTransaction` method, there are extensions available to shorten the syntax. The `UseTransaction[Async]` methods take care of opening/reusing a connection, creating a transaction and gracefully disposing of it all when finished.
+
+```csharp
+public async Task DoSomethingAsync()
+{
+    await mydb.UseTransactionAsync( async t =>
+    {
+        var sqlCommand = t.Connection.CreateCommand();
+
+        ...
+
+        await t.CommitAsync();
+    } );
+}
+```
+
+If an error occurs, the transaction is automatically rolled back. We can also provide additional behaviour to when this happens.
+
+```csharp
+public async Task DoSomethingAsync()
+{
+    await mydb.UseTransactionAsync( async t =>
+    {
+        var sqlCommand = t.Connection.CreateCommand();
+
+        ...
+
+        await t.CommitAsync();
+    }, ex =>
+    {
+        // handle exception
+    } );
+}
+```

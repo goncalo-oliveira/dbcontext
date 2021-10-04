@@ -1,50 +1,106 @@
 using System;
-using System.Transactions;
+using System.Threading.Tasks;
 
 namespace System.Data
 {
     public static class DbContextTransactionExtensions
     {
         /// <summary>
-        /// Creates a transaction scope with the given options
+        /// Opens a connection and provides a transaction to work with
         /// </summary>
-        /// <param name="options">The transaction options to use if a new transaction is created</param>
-        /// <returns>A System.Transactions.TransactionScope instance</returns>
-        public static TransactionScope CreateTransactionScope( this IDbContext context, TransactionOptions options )
-            => new TransactionScope( TransactionScopeOption.Required, options );
-
-        /// <summary>
-        /// Creates an async transaction scope with the given options
-        /// </summary>
-        /// <param name="options">The transaction options to use if a new transaction is created</param>
-        /// <returns>A System.Transactions.TransactionScope instance</returns>
-        public static TransactionScope CreateAsyncTransactionScope( this IDbContext context, TransactionOptions options )
-            => new TransactionScope( TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled );
-
-        /// <summary>
-        /// Creates a transaction scope with the default options (IsolationLevel = ReadCommitted)
-        /// </summary>
-        /// <returns>A System.Transactions.TransactionScope instance</returns>
-        public static TransactionScope CreateTransactionScope( this IDbContext context )
+        /// <param name="action">The action to execute with the transaction</param>
+        public static void UseTransaction( this IDbContext context, Action<IDbTransaction> action, Action<Exception> errorAction = null )
         {
-            return CreateTransactionScope( context, new TransactionOptions()
+            using ( var connection = context.Open() )
             {
-                IsolationLevel = Transactions.IsolationLevel.ReadCommitted,
-                Timeout = TransactionManager.MaximumTimeout
-            } );
+                using ( var transaction = connection.BeginTransaction() )
+                {
+                    try
+                    {
+                        action.Invoke( transaction );
+                    }
+                    catch ( Exception ex )
+                    {
+                        transaction.Rollback();
+
+                        errorAction?.Invoke( ex );
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// Creates a transaction scope with the default options (IsolationLevel = ReadCommitted)
+        /// Opens a connection and provides a transaction to work with
         /// </summary>
-        /// <returns>A System.Transactions.TransactionScope instance</returns>
-        public static TransactionScope CreateAsyncTransactionScope( this IDbContext context )
+        /// <param name="isolationLevel">The transaction's isolation level</param>
+        /// <param name="action">The action to execute with the transaction</param>
+        public static void UseTransaction( this IDbContext context, IsolationLevel isolationLevel, Action<IDbTransaction> action, Action<Exception> errorAction = null )
         {
-            return CreateAsyncTransactionScope( context, new TransactionOptions()
+            using ( var connection = context.Open() )
             {
-                IsolationLevel = Transactions.IsolationLevel.ReadCommitted,
-                Timeout = TransactionManager.MaximumTimeout
-            } );
+                using ( var transaction = connection.BeginTransaction( isolationLevel ) )
+                {
+                    try
+                    {
+                        action.Invoke( transaction );
+                    }
+                    catch ( Exception ex )
+                    {
+                        transaction.Rollback();
+
+                        errorAction?.Invoke( ex );
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Opens a connection and provides a transaction to work with asynchronously
+        /// </summary>
+        /// <param name="action">The asynchronous action to execute with the transaction</param>
+        public static async Task UseTransactionAsync( this IDbContext context, Func<IDbTransaction, ValueTask> action, Action<Exception> errorAction = null )
+        {
+            using ( var connection = await context.OpenAsync() )
+            {
+                using ( var transaction = await connection.BeginTransactionAsync() )
+                {
+                    try
+                    {
+                        await action.Invoke( transaction );
+                    }
+                    catch ( Exception ex )
+                    {
+                        transaction.Rollback();
+
+                        errorAction?.Invoke( ex );
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Opens a connection and provides a transaction to work with asynchronously
+        /// </summary>
+        /// <param name="isolationLevel">The transaction's isolation level</param>
+        /// <param name="action">The asynchronous action to execute with the transaction</param>
+        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<IDbTransaction, ValueTask> action, Action<Exception> errorAction = null )
+        {
+            using ( var connection = await context.OpenAsync() )
+            {
+                using ( var transaction = await connection.BeginTransactionAsync( isolationLevel ) )
+                {
+                    try
+                    {
+                        await action.Invoke( transaction );
+                    }
+                    catch ( Exception ex )
+                    {
+                        transaction.Rollback();
+
+                        errorAction?.Invoke( ex );
+                    }
+                }
+            }
         }
     }
 }
