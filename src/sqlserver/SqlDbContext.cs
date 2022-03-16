@@ -1,7 +1,8 @@
 using System;
+using System.Data;
 using Microsoft.Extensions.Options;
 
-namespace System.Data.SqlClient
+namespace Microsoft.Data.SqlClient
 {
     public class SqlDbContext : IDbContext
     {
