@@ -10,11 +10,29 @@ namespace System.Data
     /// </summary>
     internal class CommandAdapter
     {
+        internal readonly Func<IDbCommand, CancellationToken, ValueTask<object>> ExecuteScalarAsync;
         internal readonly Func<IDbCommand, CancellationToken, ValueTask<IDataReader>> ExecuteReaderAsync;
         internal readonly Func<IDbCommand, CommandBehavior, CancellationToken, ValueTask<IDataReader>> ExecuteReaderBehaviorAsync;
 
         internal CommandAdapter( Type type )
         {
+            if ( type.GetRuntimeMethod( "ExecuteScalarAsync", new[] { typeof( CancellationToken ) } ) != null )
+            {
+                ExecuteScalarAsync = async ( command, token ) =>
+                {
+                    dynamic cmd = command;
+
+                    return await cmd.ExecuteScalarAsync( token );
+                };
+            }
+            else
+            {
+                ExecuteScalarAsync = async ( command, token ) => await Task.Run( () =>
+                {
+                    return command.ExecuteScalar();
+                } );
+            }
+
             if ( type.GetRuntimeMethod( "ExecuteReaderAsync", new[] { typeof( CancellationToken ) } ) != null )
             {
                 ExecuteReaderAsync = async ( command, token ) =>

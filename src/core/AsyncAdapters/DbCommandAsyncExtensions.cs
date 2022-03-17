@@ -11,6 +11,29 @@ namespace System.Data
         private static readonly ConcurrentDictionary<Type, CommandAdapter> CommandAdapters =
             new ConcurrentDictionary<Type, CommandAdapter>();
 
+        public static async ValueTask<object> ExecuteScalarAsync( this IDbCommand command
+            , CancellationToken cancellationToken = default( CancellationToken ) )
+        {
+            if ( command == null )
+            {
+                throw new ArgumentNullException( nameof( command ) );
+            }
+
+            var dbCommand = command as DbCommand;
+
+            if ( dbCommand != null )
+            {
+                return await dbCommand.ExecuteScalarAsync( cancellationToken );
+            }
+
+            var adapter = CommandAdapters.GetOrAdd(
+                command.GetType(),
+                type => new CommandAdapter( type )
+            );
+
+            return await adapter.ExecuteScalarAsync( command, cancellationToken );
+        }
+
         public static async ValueTask<IDataReader> ExecuteReaderAsync( this IDbCommand command
             , CancellationToken cancellationToken = default( CancellationToken ) )
         {
