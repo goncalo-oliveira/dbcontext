@@ -5,7 +5,7 @@
     <RootNamespace>System.Data</RootNamespace>
     <AssemblyName>faactory.dbcontext.core</AssemblyName>
     <PackageId>Faactory.DbContext.Core</PackageId>
-    <Version>0.3.2</Version>
+    <Version>0.3.3</Version>
     <Authors>Goncalo Oliveira</Authors>
     <Description>DbContext core package</Description>
     <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>
