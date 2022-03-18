@@ -24,7 +24,7 @@ namespace System.Data
         /// </summary>
         /// <param name="cancellationToken">A cancellation token</param>
         /// <returns>An open System.Data.IDbConnection instance</returns>
-        public static async Task<IDbConnection> OpenAsync( this IDbContext context, CancellationToken cancellationToken = default( CancellationToken ) )
+        public static async Task<IDbConnection> OpenAsync( this IDbContext context, CancellationToken cancellationToken = default )
         {
             var connection = context.GetDbConnection();
 

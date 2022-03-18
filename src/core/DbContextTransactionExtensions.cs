@@ -58,7 +58,7 @@ namespace System.Data
         /// Opens a connection and provides a transaction to work with asynchronously
         /// </summary>
         /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, Func<IDbTransaction, ValueTask> action, Action<Exception> errorAction = null )
+        public static async Task UseTransactionAsync( this IDbContext context, Func<IDbTransaction, Task> action, Action<Exception> errorAction = null )
         {
             using ( var connection = await context.OpenAsync() )
             {
@@ -83,7 +83,7 @@ namespace System.Data
         /// </summary>
         /// <param name="isolationLevel">The transaction's isolation level</param>
         /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<IDbTransaction, ValueTask> action, Action<Exception> errorAction = null )
+        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<IDbTransaction, Task> action, Action<Exception> errorAction = null )
         {
             using ( var connection = await context.OpenAsync() )
             {
