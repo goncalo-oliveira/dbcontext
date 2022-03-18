@@ -16,7 +16,7 @@ namespace System.Data
             var p = command.CreateParameter();
 
             p.ParameterName = name;
-            p.Value = value;
+            p.Value = value ?? DBNull.Value;
 
             command.Parameters.Add( p );
 
