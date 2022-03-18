@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
             , IEnumerable<string> tags = default )
         {
             builder.Add( new HealthCheckRegistration( 
-                  name ?? $"dbcontext-{contextName}"
+                  name ?? $"IDbContext({contextName})"
                 , provider => new DbContextHealthCheck( 
                       contextName
                     , provider.GetRequiredService<IDbContextFactory>()

@@ -5,11 +5,6 @@ using Microsoft.Extensions.Options;
 
 namespace System.Data.HealthChecks
 {
-    internal class DbContextHealthCheckOptions
-    {
-        public string ContextName { get; set; }
-    }
-
     internal class DbContextHealthCheck : IHealthCheck
     {
         private readonly IDbContext db;
