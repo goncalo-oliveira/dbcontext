@@ -11,7 +11,7 @@ namespace System.Data
         private static readonly ConcurrentDictionary<Type, CommandAdapter> CommandAdapters =
             new ConcurrentDictionary<Type, CommandAdapter>();
 
-        public static async ValueTask<object> ExecuteNonQueryAsync( this IDbCommand command
+        public static async Task<int> ExecuteNonQueryAsync( this IDbCommand command
             , CancellationToken cancellationToken = default( CancellationToken ) )
         {
             if ( command == null )
@@ -34,7 +34,7 @@ namespace System.Data
             return await adapter.ExecuteNonQueryAsync( command, cancellationToken );
         }
 
-        public static async ValueTask<object> ExecuteScalarAsync( this IDbCommand command
+        public static async Task<object> ExecuteScalarAsync( this IDbCommand command
             , CancellationToken cancellationToken = default( CancellationToken ) )
         {
             if ( command == null )
@@ -57,7 +57,7 @@ namespace System.Data
             return await adapter.ExecuteScalarAsync( command, cancellationToken );
         }
 
-        public static async ValueTask<IDataReader> ExecuteReaderAsync( this IDbCommand command
+        public static async Task<IDataReader> ExecuteReaderAsync( this IDbCommand command
             , CancellationToken cancellationToken = default( CancellationToken ) )
         {
             if ( command == null )
@@ -80,7 +80,7 @@ namespace System.Data
             return await adapter.ExecuteReaderAsync( command, cancellationToken );
         }
 
-        public static async ValueTask<IDataReader> ExecuteReaderAsync( this IDbCommand command
+        public static async Task<IDataReader> ExecuteReaderAsync( this IDbCommand command
             , CommandBehavior commandBehavior
             , CancellationToken cancellationToken = default( CancellationToken ) )
         {

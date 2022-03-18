@@ -10,10 +10,10 @@ namespace System.Data
     /// </summary>
     internal class CommandAdapter
     {
-        internal readonly Func<IDbCommand, CancellationToken, ValueTask<int>> ExecuteNonQueryAsync;
-        internal readonly Func<IDbCommand, CancellationToken, ValueTask<object>> ExecuteScalarAsync;
-        internal readonly Func<IDbCommand, CancellationToken, ValueTask<IDataReader>> ExecuteReaderAsync;
-        internal readonly Func<IDbCommand, CommandBehavior, CancellationToken, ValueTask<IDataReader>> ExecuteReaderBehaviorAsync;
+        internal readonly Func<IDbCommand, CancellationToken, Task<int>> ExecuteNonQueryAsync;
+        internal readonly Func<IDbCommand, CancellationToken, Task<object>> ExecuteScalarAsync;
+        internal readonly Func<IDbCommand, CancellationToken, Task<IDataReader>> ExecuteReaderAsync;
+        internal readonly Func<IDbCommand, CommandBehavior, CancellationToken, Task<IDataReader>> ExecuteReaderBehaviorAsync;
 
         internal CommandAdapter( Type type )
         {
