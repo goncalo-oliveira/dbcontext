@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace System.Data
@@ -11,20 +12,29 @@ namespace System.Data
         /// <param name="action">The action to execute with the transaction</param>
         public static void UseTransaction( this IDbContext context, Action<IDbTransaction> action, Action<Exception> errorAction = null )
         {
-            using ( var connection = context.Open() )
+            using ( var connection = context.GetDbConnection() )
             {
-                using ( var transaction = connection.BeginTransaction() )
+                try
                 {
-                    try
-                    {
-                        action.Invoke( transaction );
-                    }
-                    catch ( Exception ex )
-                    {
-                        transaction.Rollback();
+                    connection.Open();
 
-                        errorAction?.Invoke( ex );
+                    using ( var transaction = connection.BeginTransaction() )
+                    {
+                        try
+                        {
+                            action.Invoke( transaction );
+                        }
+                        catch ( Exception ex )
+                        {
+                            transaction.Rollback();
+
+                            errorAction?.Invoke( ex );
+                        }
                     }
+                }
+                catch ( Exception ex )
+                {
+                    errorAction?.Invoke( ex );
                 }
             }
         }
@@ -36,20 +46,29 @@ namespace System.Data
         /// <param name="action">The action to execute with the transaction</param>
         public static void UseTransaction( this IDbContext context, IsolationLevel isolationLevel, Action<IDbTransaction> action, Action<Exception> errorAction = null )
         {
-            using ( var connection = context.Open() )
+            using ( var connection = context.GetDbConnection() )
             {
-                using ( var transaction = connection.BeginTransaction( isolationLevel ) )
+                try
                 {
-                    try
-                    {
-                        action.Invoke( transaction );
-                    }
-                    catch ( Exception ex )
-                    {
-                        transaction.Rollback();
+                    connection.Open();
 
-                        errorAction?.Invoke( ex );
+                    using ( var transaction = connection.BeginTransaction( isolationLevel ) )
+                    {
+                        try
+                        {
+                            action.Invoke( transaction );
+                        }
+                        catch ( Exception ex )
+                        {
+                            transaction.Rollback();
+
+                            errorAction?.Invoke( ex );
+                        }
                     }
+                }
+                catch ( Exception ex )
+                {
+                    errorAction?.Invoke( ex );
                 }
             }
         }
@@ -58,22 +77,64 @@ namespace System.Data
         /// Opens a connection and provides a transaction to work with asynchronously
         /// </summary>
         /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, Func<IDbTransaction, Task> action, Action<Exception> errorAction = null )
+        public static async Task UseTransactionAsync( this IDbContext context, Func<IDbTransaction, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
         {
-            using ( var connection = await context.OpenAsync() )
+            using ( var connection = context.GetDbConnection() )
             {
-                using ( var transaction = await connection.BeginTransactionAsync() )
+                try
                 {
-                    try
-                    {
-                        await action.Invoke( transaction );
-                    }
-                    catch ( Exception ex )
-                    {
-                        transaction.Rollback();
+                    await connection.OpenAsync( cancellationToken );
 
-                        errorAction?.Invoke( ex );
+                    using ( var transaction = await connection.BeginTransactionAsync( cancellationToken ) )
+                    {
+                        try
+                        {
+                            await action( transaction );
+                        }
+                        catch ( Exception ex )
+                        {
+                            await transaction.RollbackAsync();
+
+                            errorAction?.Invoke( ex );
+                        }
                     }
+                }
+                catch ( Exception ex )
+                {
+                    errorAction?.Invoke( ex );
+                }
+            }
+        }
+
+        /// <summary>
+        /// Opens a connection and provides a transaction to work with asynchronously
+        /// </summary>
+        /// <param name="action">The asynchronous action to execute with the transaction</param>
+        public static async Task UseTransactionAsync( this IDbContext context, Func<IDbTransaction, CancellationToken, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        {
+            using ( var connection = context.GetDbConnection() )
+            {
+                try
+                {
+                    await connection.OpenAsync( cancellationToken );
+
+                    using ( var transaction = await connection.BeginTransactionAsync( cancellationToken ) )
+                    {
+                        try
+                        {
+                            await action( transaction, cancellationToken );
+                        }
+                        catch ( Exception ex )
+                        {
+                            await transaction.RollbackAsync();
+
+                            errorAction?.Invoke( ex );
+                        }
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    errorAction?.Invoke( ex );
                 }
             }
         }
@@ -83,22 +144,65 @@ namespace System.Data
         /// </summary>
         /// <param name="isolationLevel">The transaction's isolation level</param>
         /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<IDbTransaction, Task> action, Action<Exception> errorAction = null )
+        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<IDbTransaction, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
         {
-            using ( var connection = await context.OpenAsync() )
+            using ( var connection = context.GetDbConnection() )
             {
-                using ( var transaction = await connection.BeginTransactionAsync( isolationLevel ) )
+                try
                 {
-                    try
-                    {
-                        await action.Invoke( transaction );
-                    }
-                    catch ( Exception ex )
-                    {
-                        transaction.Rollback();
+                    await connection.OpenAsync( cancellationToken );
 
-                        errorAction?.Invoke( ex );
+                    using ( var transaction = await connection.BeginTransactionAsync( isolationLevel, cancellationToken ) )
+                    {
+                        try
+                        {
+                            await action( transaction );
+                        }
+                        catch ( Exception ex )
+                        {
+                            await transaction.RollbackAsync();
+
+                            errorAction?.Invoke( ex );
+                        }
                     }
+                }
+                catch ( Exception ex )
+                {
+                    errorAction?.Invoke( ex );
+                }
+            }
+        }
+
+        /// <summary>
+        /// Opens a connection and provides a transaction to work with asynchronously
+        /// </summary>
+        /// <param name="isolationLevel">The transaction's isolation level</param>
+        /// <param name="action">The asynchronous action to execute with the transaction</param>
+        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<IDbTransaction, CancellationToken, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        {
+            using ( var connection = context.GetDbConnection() )
+            {
+                try
+                {
+                    await connection.OpenAsync( cancellationToken );
+
+                    using ( var transaction = await connection.BeginTransactionAsync( isolationLevel, cancellationToken ) )
+                    {
+                        try
+                        {
+                            await action( transaction, cancellationToken );
+                        }
+                        catch ( Exception ex )
+                        {
+                            await transaction.RollbackAsync();
+
+                            errorAction?.Invoke( ex );
+                        }
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    errorAction?.Invoke( ex );
                 }
             }
         }

@@ -13,6 +13,13 @@ namespace System.Data
             command = connection.CreateCommand();
         }
 
+        public DbCommandBuilder( IDbConnection connection, string commandText )
+        {
+            command = connection.CreateCommand();
+
+            SetText( commandText );
+        }
+
         public IDbCommandBuilder AddParameter( Action<IDbDataParameter> configure )
         {
             configure( command.AddParameter() );
