@@ -17,7 +17,7 @@ We'll use SqlServer as an example
 $ dotnet add package Faactory.DbContext.SqlClient
 ```
 
-On our `Startup.cs` class, we'll register the provider and configure our databases; we can add multiple contexts.
+We'll register the provider and configure our databases; we can add multiple contexts.
 
 ```csharp
 IServiceCollection services = ...
