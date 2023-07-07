@@ -19,6 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.ContextType = builder.ContextType;
                 options.ContextOptions = new DbContextOptions
                 {
+                    Name = name,
                     ConnectionString = connectionString
                 };
             } );

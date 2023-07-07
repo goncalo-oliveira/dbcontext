@@ -13,6 +13,8 @@ namespace Microsoft.Data.SqlClient
             options = contextOptions;
         }
 
+        public string Name => options.Name;
+
         public DbContextProviderTypes Provider => DbContextProviderTypes.SqlServer;
 
         public IDbConnection GetDbConnection()

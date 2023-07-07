@@ -7,6 +7,14 @@ namespace System.Data
     /// </summary>
     public interface IDbContext
     {
+        /// <summary>
+        /// The name of the context
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// The type of the context provider
+        /// </summary>
         DbContextProviderTypes Provider { get; }
 
         /// <summary>

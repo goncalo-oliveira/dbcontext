@@ -12,6 +12,8 @@ namespace Npgsql
             options = contextOptions;
         }
 
+        public string Name => options.Name;
+
         public DbContextProviderTypes Provider => DbContextProviderTypes.PostgreSql;
 
         public IDbConnection GetDbConnection()
