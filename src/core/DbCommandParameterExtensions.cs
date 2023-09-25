@@ -21,10 +21,27 @@ namespace System.Data
         /// <param name="value">The parameter value</param>
         public static IDbDataParameter AddParameterWithValue( this IDbCommand command, string name, object value )
         {
+            var valueType = value?.GetType() ?? typeof( object );
             var p = command.CreateParameter();
 
             p.ParameterName = name;
             p.Value = value ?? DBNull.Value;
+            p.DbType = valueType switch
+            {
+                Type t when t == typeof(string) => DbType.String,
+                Type t when t == typeof(bool) => DbType.Boolean,
+                Type t when t == typeof(byte) => DbType.Byte,
+                Type t when t == typeof(short) => DbType.Int16,
+                Type t when t == typeof(int) => DbType.Int32,
+                Type t when t == typeof(long) => DbType.Int64,
+                Type t when t == typeof(float) => DbType.Single,
+                Type t when t == typeof(double) => DbType.Double,
+                Type t when t == typeof(decimal) => DbType.Decimal,
+                Type t when t == typeof(DateTime) => DbType.DateTime2,
+                Type t when t == typeof(DateTimeOffset) => DbType.DateTimeOffset,
+                Type t when t == typeof(Guid) => DbType.Guid,
+                _ => throw new NotSupportedException($"Unsupported parameter type: {value.GetType()}"),
+            };
 
             command.Parameters.Add( p );
 
