@@ -21,7 +21,12 @@ namespace System.Data
         /// <param name="value">The parameter value</param>
         public static IDbDataParameter AddParameterWithValue( this IDbCommand command, string name, object value )
         {
-            var valueType = value?.GetType() ?? typeof( object );
+            /*
+            In SQL Server, NULL is an INT by default in all of the scenarios I can think of.
+            So, if the value is null, we can't infer the type from the value.
+            In that case, we can just use the default type of INT.
+            */
+            var valueType = value?.GetType() ?? typeof( int );
             var p = command.CreateParameter();
 
             p.ParameterName = name;
