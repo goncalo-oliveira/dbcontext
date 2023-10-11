@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 
 namespace System.Data
 {
@@ -18,9 +19,9 @@ namespace System.Data
         DbContextProviderTypes Provider { get; }
 
         /// <summary>
-        /// Constructs and retrieves a System.Data.IDbConnection instance
+        /// Constructs and retrieves a System.Data.Common.DbConnection instance
         /// </summary>
-        /// <returns>A System.Data.IDbConnection instance</returns>
-        IDbConnection GetDbConnection();
+        /// <returns>A System.Data.Common.DbConnection instance</returns>
+        DbConnection GetDbConnection();
     }
 }

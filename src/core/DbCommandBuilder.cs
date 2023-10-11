@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,14 +7,14 @@ namespace System.Data
 {
     internal class DbCommandBuilder : IDbCommandBuilder
     {
-        private readonly IDbCommand command;
+        private readonly DbCommand command;
 
-        public DbCommandBuilder( IDbConnection connection )
+        public DbCommandBuilder( DbConnection connection )
         {
             command = connection.CreateCommand();
         }
 
-        public DbCommandBuilder( IDbConnection connection, string commandText )
+        public DbCommandBuilder( DbConnection connection, string commandText )
         {
             command = connection.CreateCommand();
 
@@ -55,7 +56,7 @@ namespace System.Data
             return ( this );
         }
 
-        public IDbCommand Build()
+        public DbCommand Build()
         {
             return ( command );
         }

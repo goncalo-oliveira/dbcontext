@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 
 namespace System.Data
 {
@@ -20,14 +21,14 @@ namespace System.Data
         /// <summary>
         /// Creates a command builder
         /// </summary>
-        public static IDbCommandBuilder BuildCommand( this IDbConnection connection )
+        public static IDbCommandBuilder BuildCommand( this DbConnection connection )
             => new DbCommandBuilder( connection );
 
         /// <summary>
         /// Creates a command builder
         /// </summary>
         /// <param name="commandText">The command text to initialize the builder with</param>
-        public static IDbCommandBuilder BuildCommand( this IDbConnection connection, string commandText )
+        public static IDbCommandBuilder BuildCommand( this DbConnection connection, string commandText )
             => new DbCommandBuilder( connection, commandText );
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace System.Data
         /// Opens a connection and provides a transaction to work with
         /// </summary>
         /// <param name="action">The action to execute with the transaction</param>
-        public static void UseTransaction( this IDbContext context, Action<IDbTransaction> action, Action<Exception> errorAction = null )
+        public static void UseTransaction( this IDbContext context, Action<DbTransaction> action, Action<Exception> errorAction = null )
         {
             using ( var connection = context.GetDbConnection() )
             {
@@ -44,7 +45,7 @@ namespace System.Data
         /// </summary>
         /// <param name="isolationLevel">The transaction's isolation level</param>
         /// <param name="action">The action to execute with the transaction</param>
-        public static void UseTransaction( this IDbContext context, IsolationLevel isolationLevel, Action<IDbTransaction> action, Action<Exception> errorAction = null )
+        public static void UseTransaction( this IDbContext context, IsolationLevel isolationLevel, Action<DbTransaction> action, Action<Exception> errorAction = null )
         {
             using ( var connection = context.GetDbConnection() )
             {
@@ -77,7 +78,7 @@ namespace System.Data
         /// Opens a connection and provides a transaction to work with asynchronously
         /// </summary>
         /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, Func<IDbTransaction, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        public static async Task UseTransactionAsync( this IDbContext context, Func<DbTransaction, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
         {
             using ( var connection = context.GetDbConnection() )
             {
@@ -93,7 +94,7 @@ namespace System.Data
                         }
                         catch ( Exception ex )
                         {
-                            await transaction.RollbackAsync();
+                            await transaction.RollbackAsync( CancellationToken.None );
 
                             errorAction?.Invoke( ex );
                         }
@@ -110,7 +111,7 @@ namespace System.Data
         /// Opens a connection and provides a transaction to work with asynchronously
         /// </summary>
         /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, Func<IDbTransaction, CancellationToken, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        public static async Task UseTransactionAsync( this IDbContext context, Func<DbTransaction, CancellationToken, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
         {
             using ( var connection = context.GetDbConnection() )
             {
@@ -126,7 +127,7 @@ namespace System.Data
                         }
                         catch ( Exception ex )
                         {
-                            await transaction.RollbackAsync();
+                            await transaction.RollbackAsync( CancellationToken.None );
 
                             errorAction?.Invoke( ex );
                         }
@@ -144,7 +145,7 @@ namespace System.Data
         /// </summary>
         /// <param name="isolationLevel">The transaction's isolation level</param>
         /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<IDbTransaction, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<DbTransaction, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
         {
             using ( var connection = context.GetDbConnection() )
             {
@@ -160,7 +161,7 @@ namespace System.Data
                         }
                         catch ( Exception ex )
                         {
-                            await transaction.RollbackAsync();
+                            await transaction.RollbackAsync( CancellationToken.None );
 
                             errorAction?.Invoke( ex );
                         }
@@ -178,7 +179,7 @@ namespace System.Data
         /// </summary>
         /// <param name="isolationLevel">The transaction's isolation level</param>
         /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<IDbTransaction, CancellationToken, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<DbTransaction, CancellationToken, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
         {
             using ( var connection = context.GetDbConnection() )
             {
@@ -194,7 +195,7 @@ namespace System.Data
                         }
                         catch ( Exception ex )
                         {
-                            await transaction.RollbackAsync();
+                            await transaction.RollbackAsync( CancellationToken.None );
 
                             errorAction?.Invoke( ex );
                         }

@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace System.Data
 {
     public static class DbCommandParameterExtensions
@@ -5,7 +7,7 @@ namespace System.Data
         /// <summary>
         /// Adds a parameter to the command
         /// </summary>
-        public static IDbDataParameter AddParameter( this IDbCommand command )
+        public static DbParameter AddParameter( this DbCommand command )
         {
             var p = command.CreateParameter();
 
@@ -19,7 +21,7 @@ namespace System.Data
         /// </summary>
         /// <param name="name">The parameter name</param>
         /// <param name="value">The parameter value</param>
-        public static IDbDataParameter AddParameterWithValue( this IDbCommand command, string name, object value )
+        public static DbParameter AddParameterWithValue( this DbCommand command, string name, object value )
         {
             /*
             In SQL Server, NULL is an INT by default in all of the scenarios I can think of.
@@ -58,7 +60,7 @@ namespace System.Data
         /// </summary>
         /// <param name="name">The parameter name</param>
         /// <param name="dbType">The parameter type</param>
-        public static IDbDataParameter AddParameter( this IDbCommand command, string name, DbType dbType )
+        public static DbParameter AddParameter( this DbCommand command, string name, DbType dbType )
         {
             var p = command.CreateParameter();
 
@@ -76,7 +78,7 @@ namespace System.Data
         /// <param name="name">The parameter name</param>
         /// <param name="dbType">The parameter type</param>
         /// <param name="size">The parameter size</param>
-        public static IDbDataParameter AddParameter( this IDbCommand command, string name, DbType dbType, int size )
+        public static DbParameter AddParameter( this DbCommand command, string name, DbType dbType, int size )
         {
             var p = command.CreateParameter();
 
@@ -96,7 +98,7 @@ namespace System.Data
         /// <param name="dbType">The parameter type</param>
         /// <param name="size">The parameter size</param>
         /// <param name="sourceColumn">The parameter source column</param>
-        public static IDbDataParameter AddParameter( this IDbCommand command, string name, DbType dbType, int size, string sourceColumn )
+        public static DbParameter AddParameter( this DbCommand command, string name, DbType dbType, int size, string sourceColumn )
         {
             var p = command.CreateParameter();
 

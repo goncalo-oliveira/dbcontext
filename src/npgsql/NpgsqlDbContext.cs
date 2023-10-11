@@ -16,7 +16,7 @@ namespace Npgsql
 
         public DbContextProviderTypes Provider => DbContextProviderTypes.PostgreSql;
 
-        public IDbConnection GetDbConnection()
+        public System.Data.Common.DbConnection GetDbConnection()
             => new NpgsqlConnection( options.ConnectionString );
     }
 }

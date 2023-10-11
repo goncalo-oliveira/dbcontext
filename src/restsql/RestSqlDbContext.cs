@@ -25,7 +25,7 @@ public class RestSqlDbContext : IDbContext
 
     public DbContextProviderTypes Provider => DbContextProviderTypes.SqlServer;
 
-    public IDbConnection GetDbConnection()
+    public System.Data.Common.DbConnection GetDbConnection()
     {
         var httpClient = clientFactory.CreateClient();
 
@@ -72,9 +72,9 @@ public class RestSqlDbContext : IDbContext
         );
 
         httpClient.Timeout = TimeSpan.FromSeconds( 120 );
-        //httpClient.DefaultRequestHeaders.Add( "Accept", "application/json" );
-        //httpClient.DefaultRequestVersion = HttpVersion.Version20;
-        //httpClient.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
+        httpClient.DefaultRequestHeaders.Add( "Accept", "application/json" );
+        httpClient.DefaultRequestVersion = HttpVersion.Version20;
+        httpClient.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
 
         var user = query["user"];
         var password = query["password"];

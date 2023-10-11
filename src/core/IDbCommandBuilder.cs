@@ -34,10 +34,10 @@ namespace System.Data
         /// <param name="name">The parameter name</param>
         /// <param name="value">The parameter value</param>
         IDbCommandBuilder AddParameter( string name, object value );
-        
+
         /// <summary>
-        /// Creates the IDbCommand instance
+        /// Creates the DbCommand instance
         /// </summary>
-        IDbCommand Build();
+        Common.DbCommand Build();
     }
 }

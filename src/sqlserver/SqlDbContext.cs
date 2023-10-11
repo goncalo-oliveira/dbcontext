@@ -17,7 +17,7 @@ namespace Microsoft.Data.SqlClient
 
         public DbContextProviderTypes Provider => DbContextProviderTypes.SqlServer;
 
-        public IDbConnection GetDbConnection()
+        public System.Data.Common.DbConnection GetDbConnection()
             => new SqlConnection( options.ConnectionString );
     }
 }
