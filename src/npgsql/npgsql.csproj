@@ -5,7 +5,7 @@
     <RootNamespace>System.Data</RootNamespace>
     <AssemblyName>faactory.dbcontext.npgsql</AssemblyName>
     <PackageId>Faactory.DbContext.Npgsql</PackageId>
-    <Version>0.6.0-preview-1</Version>
+    <Version>0.6.0</Version>
     <Authors>Goncalo Oliveira</Authors>
     <Description>DbContext PostgreSql provider</Description>
     <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>
