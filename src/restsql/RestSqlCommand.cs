@@ -31,7 +31,7 @@ internal sealed class RestSqlCommand : DbCommand
 
     #pragma warning restore CS8765
 
-    public override int CommandTimeout { get; set; }
+    public override int CommandTimeout { get; set; } = 30;
     public override CommandType CommandType { get; set; }
     public override bool DesignTimeVisible { get; set; }
     public override UpdateRowSource UpdatedRowSource { get; set; }

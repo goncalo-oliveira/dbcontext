@@ -14,12 +14,6 @@ internal static class JsonElementValueExtensions
             return null;
         }
 
-        // datetime
-        if ( jsonElement.TryGetDateTime( out var dateTime ) )
-        {
-            return dateTime;
-        }
-
         // numbers: double, int32, int64
         if ( jsonElement.IsOfKind( JsonValueKind.Number ) )
         {
@@ -37,6 +31,12 @@ internal static class JsonElementValueExtensions
             }
 
             return longValue;
+        }
+
+        // datetime
+        if ( jsonElement.IsOfKind( JsonValueKind.String ) && jsonElement.TryGetDateTime( out var dateTime ) )
+        {
+            return dateTime;
         }
 
         switch ( jsonElement.ValueKind )
