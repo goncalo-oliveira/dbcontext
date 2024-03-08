@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <RootNamespace>System.Data</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>faactory.dbcontext.restsql</AssemblyName>
     <PackageId>Faactory.DbContext.RestSql</PackageId>
-    <Version>0.6.0-preview-2</Version>
+    <Version>0.6.1-preview-1</Version>
     <Authors>Goncalo Oliveira</Authors>
     <Description>DbContext RestSql provider</Description>
     <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>
@@ -22,8 +22,8 @@
 
   <ItemGroup>
     <PackageReference Include="Faactory.RestClient" Version="0.3.2" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
