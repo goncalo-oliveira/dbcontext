@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <RootNamespace>System.Data</RootNamespace>
+    <AssemblyName>faactory.dbcontext.sqlite</AssemblyName>
+    <PackageId>Faactory.DbContext.Sqlite</PackageId>
+    <Version>0.7.0</Version>
+    <Authors>Goncalo Oliveira</Authors>
+    <Description>DbContext Sqlite provider</Description>
+    <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>faactory.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\core\core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../faactory.png" Pack="true" PackagePath="/" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+</Project>
