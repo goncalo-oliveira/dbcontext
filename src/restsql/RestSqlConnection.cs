@@ -1,9 +1,10 @@
-using System;
 using System.Data;
 using System.Data.Common;
 using Faactory.RestClient;
 
+#pragma warning disable IDE0130
 namespace Faactory.RestSql;
+#pragma warning restore IDE0130
 
 internal sealed class RestSqlConnection : DbConnection
 {

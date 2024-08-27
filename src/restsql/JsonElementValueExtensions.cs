@@ -1,6 +1,8 @@
 using System.Text.Json;
 
+#pragma warning disable IDE0130
 namespace Faactory.RestSql;
+#pragma warning restore IDE0130
 
 internal static class JsonElementValueExtensions
 {

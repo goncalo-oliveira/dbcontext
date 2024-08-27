@@ -1,6 +1,6 @@
-using System;
-
+#pragma warning disable IDE0130
 namespace Faactory.RestSql;
+#pragma warning restore IDE0130
 
 public sealed class RestSqlException : Exception
 {

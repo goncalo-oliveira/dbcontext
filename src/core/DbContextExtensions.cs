@@ -1,37 +1,33 @@
-using System;
 using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace System.Data
+namespace System.Data;
+
+public static class DbContextExtensions
 {
-    public static class DbContextExtensions
+    /// <summary>
+    /// Retrieves a System.Data.Common.DbConnection instance and opens it
+    /// </summary>
+    /// <returns>An open System.Data.Common.DbConnection instance</returns>
+    public static DbConnection Open( this IDbContext context )
     {
-        /// <summary>
-        /// Retrieves a System.Data.Common.DbConnection instance and opens it
-        /// </summary>
-        /// <returns>An open System.Data.Common.DbConnection instance</returns>
-        public static DbConnection Open( this IDbContext context )
-        {
-            var connection = context.GetDbConnection();
+        var connection = context.GetDbConnection();
 
-            connection.Open();
+        connection.Open();
 
-            return ( connection );
-        }
+        return connection;
+    }
 
-        /// <summary>
-        /// Retrieves a System.Data.Common.DbConnection instance and opens it
-        /// </summary>
-        /// <param name="cancellationToken">A cancellation token</param>
-        /// <returns>An open System.Data.Common.DbConnection instance</returns>
-        public static async Task<DbConnection> OpenAsync( this IDbContext context, CancellationToken cancellationToken = default )
-        {
-            var connection = context.GetDbConnection();
+    /// <summary>
+    /// Retrieves a System.Data.Common.DbConnection instance and opens it
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token</param>
+    /// <returns>An open System.Data.Common.DbConnection instance</returns>
+    public static async Task<DbConnection> OpenAsync( this IDbContext context, CancellationToken cancellationToken = default )
+    {
+        var connection = context.GetDbConnection();
 
-            await connection.OpenAsync( cancellationToken );
+        await connection.OpenAsync( cancellationToken );
 
-            return ( connection );
-        }
+        return connection;
     }
 }

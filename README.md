@@ -10,6 +10,7 @@ Before we can use the extensions, we need to register the context provider with 
 |---|---|---|
 |PostgreSql|Faactory.DbContext.Npgsql| PostgreSQL driver; uses [Npgsql](https://github.com/npgsql/npgsql) |
 |SqlServer|Faactory.DbContext.SqlClient| SQL Server driver; uses [Microsoft.Data.SqlClient](https://github.com/dotnet/sqlclient) |
+|Sqlite|Faactory.DbContext.Sqlite| SQLite driver; uses [Microsoft.Data.Sqlite](https://github.com/dotnet/efcore/blob/main/src/Microsoft.Data.Sqlite/PACKAGE.md) |
 |SqlServer|Faactory.DbContext.RestSql| SQL Server via restSQL; still experimental |
 
 We'll use SqlServer as an example
@@ -142,7 +143,7 @@ private readonly IDbContext mydb;
 
 /*
 This example creates a command builder from the connection instance.
-This is probably the most straightforward way to use the builder.
+This is the most straightforward way to use the builder.
 */
 public async Task UseBuilderFromConnectionAsync()
 {
@@ -163,7 +164,8 @@ public async Task UseBuilderFromConnectionAsync()
 /*
 This example creates a command builder directly from the context instance.
 Please note that in this caase, the command builder will ask for a connection
-instance from the context, which means that you'll have to properly dispose of it after use.
+instance from the context that you'll have to properly dispose of it after use.
+You'll also have to open the connection before using it.
 */
 public async Task UseBuilderFromContextAsync()
 {
@@ -175,6 +177,7 @@ public async Task UseBuilderFromContextAsync()
     // ensure that the connection is properly disposed of after use
     using ( command.Connection )
     {
+        // we are responsible for opening the connection before using it
         await command.Connection.OpenAsync();
 
         using ( var reader = await command.ExecuteReaderAsync() )
@@ -187,4 +190,4 @@ public async Task UseBuilderFromContextAsync()
 
 ## Compatibility with Object Mappers
 
-The library is compatible with most object mappers that use `DbConnection` or `IDbConnection` instances, such as [Dapper](https://github.com/DapperLib/Dapper), [PetaPoco](github.com/CollaboratingPlatypus/PetaPoco) or [Norm.net](https://github.com/vb-consulting/Norm.net).
+The library is fully compatible with most object mappers that use `DbConnection` or `IDbConnection` instances, such as [Dapper](https://github.com/DapperLib/Dapper), [PetaPoco](github.com/CollaboratingPlatypus/PetaPoco) or [Norm.net](https://github.com/vb-consulting/Norm.net).

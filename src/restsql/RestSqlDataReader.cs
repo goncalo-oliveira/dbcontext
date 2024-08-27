@@ -4,7 +4,9 @@ using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
+#pragma warning disable IDE0130
 namespace Faactory.RestSql;
+#pragma warning restore IDE0130
 
 public sealed class RestSqlDataReader : DbDataReader
 {
@@ -94,7 +96,7 @@ public sealed class RestSqlDataReader : DbDataReader
 
         if ( chars == null )
         {
-            return ( 0 );
+            return 0;
         }
 
         if ( buffer != null )
@@ -198,7 +200,7 @@ public sealed class RestSqlDataReader : DbDataReader
 
     public override bool NextResult()
     {
-        return ( false );
+        return false;
     }
 
     public override bool Read()
@@ -207,9 +209,9 @@ public sealed class RestSqlDataReader : DbDataReader
         {
             currentRecordIndex++;
 
-            return ( true );
+            return true;
         }
 
-        return ( false );
+        return false;
     }
 }

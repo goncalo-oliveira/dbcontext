@@ -1,211 +1,235 @@
-using System;
 using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace System.Data
+namespace System.Data;
+
+public static class DbContextTransactionExtensions
 {
-    public static class DbContextTransactionExtensions
+    /// <summary>
+    /// Opens a connection and provides a transaction to work with
+    /// </summary>
+    /// <param name="action">The action to execute with the transaction</param>
+    /// <param name="errorAction">The action to execute if an error occurs</param>
+    /// <returns>True if the transaction was successful, false otherwise</returns>
+    public static bool UseTransaction( this IDbContext context, Action<DbTransaction> action, Action<Exception>? errorAction = null )
     {
-        /// <summary>
-        /// Opens a connection and provides a transaction to work with
-        /// </summary>
-        /// <param name="action">The action to execute with the transaction</param>
-        public static void UseTransaction( this IDbContext context, Action<DbTransaction> action, Action<Exception> errorAction = null )
+        using var connection = context.GetDbConnection();
+        try
         {
-            using ( var connection = context.GetDbConnection() )
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction();
+            try
             {
-                try
-                {
-                    connection.Open();
+                action.Invoke( transaction );
 
-                    using ( var transaction = connection.BeginTransaction() )
-                    {
-                        try
-                        {
-                            action.Invoke( transaction );
-                        }
-                        catch ( Exception ex )
-                        {
-                            transaction.Rollback();
+                return true;
+            }
+            catch ( Exception ex )
+            {
+                transaction.Rollback();
 
-                            errorAction?.Invoke( ex );
-                        }
-                    }
-                }
-                catch ( Exception ex )
-                {
-                    errorAction?.Invoke( ex );
-                }
+                errorAction?.Invoke( ex );
+
+                return false;
             }
         }
-
-        /// <summary>
-        /// Opens a connection and provides a transaction to work with
-        /// </summary>
-        /// <param name="isolationLevel">The transaction's isolation level</param>
-        /// <param name="action">The action to execute with the transaction</param>
-        public static void UseTransaction( this IDbContext context, IsolationLevel isolationLevel, Action<DbTransaction> action, Action<Exception> errorAction = null )
+        catch ( Exception ex )
         {
-            using ( var connection = context.GetDbConnection() )
+            errorAction?.Invoke( ex );
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Opens a connection and provides a transaction to work with
+    /// </summary>
+    /// <param name="isolationLevel">The transaction's isolation level</param>
+    /// <param name="action">The action to execute with the transaction</param>
+    /// <param name="errorAction">The action to execute if an error occurs</param>
+    /// <returns>True if the transaction was successful, false otherwise</returns>
+    public static bool UseTransaction( this IDbContext context, IsolationLevel isolationLevel, Action<DbTransaction> action, Action<Exception>? errorAction = null )
+    {
+        using var connection = context.GetDbConnection();
+        try
+        {
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction( isolationLevel );
+            try
             {
-                try
-                {
-                    connection.Open();
+                action.Invoke( transaction );
 
-                    using ( var transaction = connection.BeginTransaction( isolationLevel ) )
-                    {
-                        try
-                        {
-                            action.Invoke( transaction );
-                        }
-                        catch ( Exception ex )
-                        {
-                            transaction.Rollback();
+                return true;
+            }
+            catch ( Exception ex )
+            {
+                transaction.Rollback();
 
-                            errorAction?.Invoke( ex );
-                        }
-                    }
-                }
-                catch ( Exception ex )
-                {
-                    errorAction?.Invoke( ex );
-                }
+                errorAction?.Invoke( ex );
+
+                return false;
             }
         }
-
-        /// <summary>
-        /// Opens a connection and provides a transaction to work with asynchronously
-        /// </summary>
-        /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, Func<DbTransaction, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        catch ( Exception ex )
         {
-            using ( var connection = context.GetDbConnection() )
+            errorAction?.Invoke( ex );
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Opens a connection and provides a transaction to work with asynchronously
+    /// </summary>
+    /// <param name="action">The asynchronous action to execute with the transaction</param>
+    /// <param name="errorAction">The action to execute if an error occurs</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>True if the transaction was successful, false otherwise</returns>
+    public static async Task<bool> UseTransactionAsync( this IDbContext context, Func<DbTransaction, Task> action, Action<Exception>? errorAction = null, CancellationToken cancellationToken = default )
+    {
+        using var connection = context.GetDbConnection();
+        try
+        {
+            await connection.OpenAsync( cancellationToken );
+
+            using var transaction = await connection.BeginTransactionAsync( cancellationToken );
+            try
             {
-                try
-                {
-                    await connection.OpenAsync( cancellationToken );
+                await action( transaction );
 
-                    using ( var transaction = await connection.BeginTransactionAsync( cancellationToken ) )
-                    {
-                        try
-                        {
-                            await action( transaction );
-                        }
-                        catch ( Exception ex )
-                        {
-                            await transaction.RollbackAsync( CancellationToken.None );
+                return true;
+            }
+            catch ( Exception ex )
+            {
+                await transaction.RollbackAsync( CancellationToken.None );
 
-                            errorAction?.Invoke( ex );
-                        }
-                    }
-                }
-                catch ( Exception ex )
-                {
-                    errorAction?.Invoke( ex );
-                }
+                errorAction?.Invoke( ex );
+
+                return false;
             }
         }
-
-        /// <summary>
-        /// Opens a connection and provides a transaction to work with asynchronously
-        /// </summary>
-        /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, Func<DbTransaction, CancellationToken, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        catch ( Exception ex )
         {
-            using ( var connection = context.GetDbConnection() )
+            errorAction?.Invoke( ex );
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Opens a connection and provides a transaction to work with asynchronously
+    /// </summary>
+    /// <param name="action">The asynchronous action to execute with the transaction</param>
+    /// <param name="errorAction">The action to execute if an error occurs</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>True if the transaction was successful, false otherwise</returns>
+    public static async Task<bool> UseTransactionAsync( this IDbContext context, Func<DbTransaction, CancellationToken, Task> action, Action<Exception>? errorAction = null, CancellationToken cancellationToken = default )
+    {
+        using var connection = context.GetDbConnection();
+        try
+        {
+            await connection.OpenAsync( cancellationToken );
+
+            using var transaction = await connection.BeginTransactionAsync( cancellationToken );
+            try
             {
-                try
-                {
-                    await connection.OpenAsync( cancellationToken );
+                await action( transaction, cancellationToken );
 
-                    using ( var transaction = await connection.BeginTransactionAsync( cancellationToken ) )
-                    {
-                        try
-                        {
-                            await action( transaction, cancellationToken );
-                        }
-                        catch ( Exception ex )
-                        {
-                            await transaction.RollbackAsync( CancellationToken.None );
+                return true;
+            }
+            catch ( Exception ex )
+            {
+                await transaction.RollbackAsync( CancellationToken.None );
 
-                            errorAction?.Invoke( ex );
-                        }
-                    }
-                }
-                catch ( Exception ex )
-                {
-                    errorAction?.Invoke( ex );
-                }
+                errorAction?.Invoke( ex );
+
+                return false;
             }
         }
-
-        /// <summary>
-        /// Opens a connection and provides a transaction to work with asynchronously
-        /// </summary>
-        /// <param name="isolationLevel">The transaction's isolation level</param>
-        /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<DbTransaction, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        catch ( Exception ex )
         {
-            using ( var connection = context.GetDbConnection() )
+            errorAction?.Invoke( ex );
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Opens a connection and provides a transaction to work with asynchronously
+    /// </summary>
+    /// <param name="isolationLevel">The transaction's isolation level</param>
+    /// <param name="action">The asynchronous action to execute with the transaction</param>
+    /// <param name="errorAction">The action to execute if an error occurs</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>True if the transaction was successful, false otherwise</returns>
+    public static async Task<bool> UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<DbTransaction, Task> action, Action<Exception>? errorAction = null, CancellationToken cancellationToken = default )
+    {
+        using var connection = context.GetDbConnection();
+        try
+        {
+            await connection.OpenAsync( cancellationToken );
+
+            using var transaction = await connection.BeginTransactionAsync( isolationLevel, cancellationToken );
+            try
             {
-                try
-                {
-                    await connection.OpenAsync( cancellationToken );
+                await action( transaction );
 
-                    using ( var transaction = await connection.BeginTransactionAsync( isolationLevel, cancellationToken ) )
-                    {
-                        try
-                        {
-                            await action( transaction );
-                        }
-                        catch ( Exception ex )
-                        {
-                            await transaction.RollbackAsync( CancellationToken.None );
+                return true;
+            }
+            catch ( Exception ex )
+            {
+                await transaction.RollbackAsync( CancellationToken.None );
 
-                            errorAction?.Invoke( ex );
-                        }
-                    }
-                }
-                catch ( Exception ex )
-                {
-                    errorAction?.Invoke( ex );
-                }
+                errorAction?.Invoke( ex );
+
+                return false;
             }
         }
-
-        /// <summary>
-        /// Opens a connection and provides a transaction to work with asynchronously
-        /// </summary>
-        /// <param name="isolationLevel">The transaction's isolation level</param>
-        /// <param name="action">The asynchronous action to execute with the transaction</param>
-        public static async Task UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<DbTransaction, CancellationToken, Task> action, Action<Exception> errorAction = null, CancellationToken cancellationToken = default )
+        catch ( Exception ex )
         {
-            using ( var connection = context.GetDbConnection() )
+            errorAction?.Invoke( ex );
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Opens a connection and provides a transaction to work with asynchronously
+    /// </summary>
+    /// <param name="isolationLevel">The transaction's isolation level</param>
+    /// <param name="action">The asynchronous action to execute with the transaction</param>
+    /// <param name="errorAction">The action to execute if an error occurs</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>True if the transaction was successful, false otherwise</returns>
+    public static async Task<bool> UseTransactionAsync( this IDbContext context, IsolationLevel isolationLevel, Func<DbTransaction, CancellationToken, Task> action, Action<Exception>? errorAction = null, CancellationToken cancellationToken = default )
+    {
+        using var connection = context.GetDbConnection();
+        try
+        {
+            await connection.OpenAsync( cancellationToken );
+
+            using var transaction = await connection.BeginTransactionAsync( isolationLevel, cancellationToken );
+            try
             {
-                try
-                {
-                    await connection.OpenAsync( cancellationToken );
+                await action( transaction, cancellationToken );
 
-                    using ( var transaction = await connection.BeginTransactionAsync( isolationLevel, cancellationToken ) )
-                    {
-                        try
-                        {
-                            await action( transaction, cancellationToken );
-                        }
-                        catch ( Exception ex )
-                        {
-                            await transaction.RollbackAsync( CancellationToken.None );
-
-                            errorAction?.Invoke( ex );
-                        }
-                    }
-                }
-                catch ( Exception ex )
-                {
-                    errorAction?.Invoke( ex );
-                }
+                return true;
             }
+            catch ( Exception ex )
+            {
+                await transaction.RollbackAsync( CancellationToken.None );
+
+                errorAction?.Invoke( ex );
+
+                return false;
+            }
+        }
+        catch ( Exception ex )
+        {
+            errorAction?.Invoke( ex );
+
+            return false;
         }
     }
 }

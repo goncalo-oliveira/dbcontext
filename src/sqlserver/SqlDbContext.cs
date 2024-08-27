@@ -1,23 +1,17 @@
-using System;
 using System.Data;
-using Microsoft.Extensions.Options;
 
-namespace Microsoft.Data.SqlClient
+#pragma warning disable IDE0130
+namespace Microsoft.Data.SqlClient;
+#pragma warning restore IDE0130
+
+public class SqlDbContext( DbContextOptions contextOptions ) : IDbContext
 {
-    public class SqlDbContext : IDbContext
-    {
-        private readonly DbContextOptions options;
+    private readonly DbContextOptions options = contextOptions;
 
-        public SqlDbContext( DbContextOptions contextOptions )
-        {
-            options = contextOptions;
-        }
+    public string Name => options.Name;
 
-        public string Name => options.Name;
+    public DbContextProviderType Provider => DbContextProviderType.SqlServer;
 
-        public DbContextProviderTypes Provider => DbContextProviderTypes.SqlServer;
-
-        public System.Data.Common.DbConnection GetDbConnection()
-            => new SqlConnection( options.ConnectionString );
-    }
+    public System.Data.Common.DbConnection GetDbConnection()
+        => new SqlConnection( options.ConnectionString );
 }

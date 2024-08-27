@@ -1,7 +1,9 @@
 using System.Data;
 using System.Data.Common;
 
+#pragma warning disable IDE0130
 namespace Faactory.RestSql;
+#pragma warning restore IDE0130
 
 internal sealed class RestSqlParameter : DbParameter
 {
@@ -60,7 +62,7 @@ internal sealed class RestSqlParameter : DbParameter
     {
         if ( ( Value == null ) || ( Value == DBNull.Value ) )
         {
-            return ( "NULL" );
+            return "NULL";
         }
 
         return ( DbType switch

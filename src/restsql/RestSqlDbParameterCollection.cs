@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Data.Common;
 
+#pragma warning disable IDE0130
 namespace Faactory.RestSql;
+#pragma warning restore IDE0130
 
 internal sealed class RestSqlDbParameterCollection : DbParameterCollection
 {

@@ -1,43 +1,33 @@
-using System;
 using System.Data;
 using System.Data.Common;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Faactory.RestClient;
 
+#pragma warning disable IDE0130
 namespace Faactory.RestSql;
+#pragma warning restore IDE0130
 
-internal sealed class RestSqlCommand : DbCommand
+internal sealed class RestSqlCommand( RestSqlConnection restSqlConnection ) : DbCommand
 {
     private static readonly JsonDocument EmptyJsonDocument = JsonDocument.Parse( "[]" );
-    private readonly IRestClient client;
-    private readonly byte[]? signingKey;
+    private readonly IRestClient client = restSqlConnection.Client;
+    private readonly byte[]? signingKey = restSqlConnection.SigningKey;
 
-    public RestSqlCommand( RestSqlConnection restSqlConnection )
-    {
-        client = restSqlConnection.Client;
-        signingKey = restSqlConnection.SigningKey;
+#pragma warning disable CS8765 // disable nullability of properties
 
-        CommandText = string.Empty;
-        DbConnection = restSqlConnection;
-        DbParameterCollection = new RestSqlDbParameterCollection();
-    }
+    public override string CommandText { get; set; } = string.Empty;
 
-    #pragma warning disable CS8765 // disable nullability of properties
-    
-    public override string CommandText { get; set; }
-
-    #pragma warning restore CS8765
+#pragma warning restore CS8765
 
     public override int CommandTimeout { get; set; } = 30;
     public override CommandType CommandType { get; set; }
     public override bool DesignTimeVisible { get; set; }
     public override UpdateRowSource UpdatedRowSource { get; set; }
-    protected override DbConnection? DbConnection { get; set; }
+    protected override DbConnection? DbConnection { get; set; } = restSqlConnection;
 
-    protected override DbParameterCollection DbParameterCollection { get; }
+    protected override DbParameterCollection DbParameterCollection { get; } = new RestSqlDbParameterCollection();
 
     protected override DbTransaction? DbTransaction { get; set; }
 
@@ -50,14 +40,14 @@ internal sealed class RestSqlCommand : DbCommand
     {
         _ = Send();
 
-        return ( 0 );
+        return 0;
     }
 
     public override async Task<int> ExecuteNonQueryAsync( CancellationToken cancellationToken )
     {
         _ = await SendAsync();
 
-        return ( 0 );
+        return 0;
     }
 
     public override object ExecuteScalar()
@@ -110,7 +100,7 @@ internal sealed class RestSqlCommand : DbCommand
         if parameters exist, we need to add them to the sql query
         */
         var commandText = GetCommandTextWithParameters();
-        var url = $"/execute/{DbConnection!.Database}";
+        var url = $"/v1/{DbConnection!.Database}";
 
         // create request
         var request = new HttpRequestMessage( HttpMethod.Post, url )
@@ -168,7 +158,7 @@ internal sealed class RestSqlCommand : DbCommand
                 throw new RestSqlException( (int)response.StatusCode, Encoding.UTF8.GetString( responseContent ) );
             }
 
-            if ( !responseContent.Any() )
+            if ( responseContent.Length == 0 )
             {
                 return EmptyJsonDocument;
             }

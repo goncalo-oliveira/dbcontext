@@ -1,39 +1,31 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 
-namespace System.Data.HealthChecks
+#pragma warning disable IDE0130
+namespace System.Data.HealthChecks;
+#pragma warning restore IDE0130
+
+internal class DbContextHealthCheck( string contextName, IDbContextFactory dbContextFactory ) : IHealthCheck
 {
-    internal class DbContextHealthCheck : IHealthCheck
+    private readonly IDbContext db = dbContextFactory.GetDbContext( contextName );
+
+    public async Task<HealthCheckResult> CheckHealthAsync( HealthCheckContext context, CancellationToken cancellationToken )
     {
-        private readonly IDbContext db;
-
-        public DbContextHealthCheck( string contextName, IDbContextFactory dbContextFactory )
+        try
         {
-            db = dbContextFactory.GetDbContext( contextName );
+            using ( var connection = await db.OpenAsync( cancellationToken ) )
+            {
+                using var command = connection.CreateCommand();
+                
+                command.CommandText = "select 1";
+
+                _ = await command.ExecuteScalarAsync(cancellationToken);
+            }
+
+            return HealthCheckResult.Healthy();
         }
-
-        public async Task<HealthCheckResult> CheckHealthAsync( HealthCheckContext context, CancellationToken cancellationToken )
+        catch ( Exception ex )
         {
-            try
-            {
-                using ( var connection = await db.OpenAsync( cancellationToken ) )
-                {
-                    using ( var command = connection.CreateCommand() )
-                    {
-                        command.CommandText = "select 1";
-
-                        _ = await command.ExecuteScalarAsync( cancellationToken );
-                    }
-                }
-
-                return HealthCheckResult.Healthy();
-            }
-            catch ( Exception ex )
-            {
-                return new HealthCheckResult( context.Registration.FailureStatus, exception: ex );
-            }
+            return new HealthCheckResult( context.Registration.FailureStatus, exception: ex );
         }
     }
 }

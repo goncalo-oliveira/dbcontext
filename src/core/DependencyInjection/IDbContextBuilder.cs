@@ -1,20 +1,19 @@
-using System;
+#pragma warning disable IDE0130
+namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130
 
-namespace Microsoft.Extensions.DependencyInjection
+/// <summary>
+/// The context builder interface
+/// </summary>
+public interface IDbContextBuilder
 {
     /// <summary>
-    /// The context builder interface
+    /// The context type
     /// </summary>
-    public interface IDbContextBuilder
-    {
-        /// <summary>
-        /// The context type
-        /// </summary>
-        Type ContextType { get; }
+    Type ContextType { get; }
 
-        /// <summary>
-        /// The collection of service descriptors
-        /// </summary>
-        IServiceCollection Services { get; }
-    }
+    /// <summary>
+    /// The collection of service descriptors
+    /// </summary>
+    IServiceCollection Services { get; }
 }

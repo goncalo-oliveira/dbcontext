@@ -1,31 +1,27 @@
-using System;
-using System.Collections.Specialized;
-using System.Data;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web;
 using Faactory.RestClient;
 using Faactory.RestSql;
 
 namespace System.Data;
 
-public class RestSqlDbContext : IDbContext
+public sealed class RestSqlDbContext( IHttpClientFactory httpClientFactory, DbContextOptions contextOptions ) : IDbContext
 {
-    private readonly IHttpClientFactory clientFactory;
-    private readonly DbContextOptions options;
-
-    public RestSqlDbContext( IHttpClientFactory httpClientFactory, DbContextOptions contextOptions )
-    {
-        clientFactory = httpClientFactory;
-        options = contextOptions;
-    }
+    private readonly IHttpClientFactory clientFactory = httpClientFactory;
+    private readonly DbContextOptions options = contextOptions;
 
     public string Name => options.Name;
 
-    public DbContextProviderTypes Provider => DbContextProviderTypes.SqlServer;
+    public DbContextProviderType Provider => DbContextProviderType.RestSql;
 
-    public System.Data.Common.DbConnection GetDbConnection()
+    private static readonly string[] sourceArray =
+        [
+            "restsql",
+            "restsql+http",
+            "restsql+https",
+        ];
+
+    public Common.DbConnection GetDbConnection()
     {
         var httpClient = clientFactory.CreateClient();
 
@@ -39,13 +35,7 @@ public class RestSqlDbContext : IDbContext
         // unsafe http connection by setting the scheme to restsql+http
         // restsql+http://localhost:5000?database=restsql&user=restsql&password=restsql
 
-        if ( !new string[]
-        {
-            "restsql",
-            "restsql+http",
-            "restsql+https",
-        }
-        .Contains( connectionString.Scheme ) )
+        if ( !sourceArray.Contains( connectionString.Scheme ) )
         {
             throw new ArgumentException( "Invalid connection string. Invalid scheme." );
         }
@@ -86,7 +76,7 @@ public class RestSqlDbContext : IDbContext
             {
                 httpClient.DefaultRequestHeaders.Authorization = new Net.Http.Headers.AuthenticationHeaderValue(
                     "Basic",
-                    Convert.ToBase64String( System.Text.Encoding.ASCII.GetBytes( $"{user}:{password}" ) )
+                    Convert.ToBase64String(Text.Encoding.ASCII.GetBytes( $"{user}:{password}" ) )
                 );
             }
 

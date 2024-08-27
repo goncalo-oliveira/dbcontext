@@ -1,22 +1,17 @@
-using System;
 using System.Data;
 
-namespace Npgsql
+#pragma warning disable IDE0130
+namespace Npgsql;
+#pragma warning restore IDE0130
+
+public class NpgsqlDbContext( DbContextOptions contextOptions ) : IDbContext
 {
-    public class NpgsqlDbContext : IDbContext
-    {
-        private readonly DbContextOptions options;
+    private readonly DbContextOptions options = contextOptions;
 
-        public NpgsqlDbContext( DbContextOptions contextOptions )
-        {
-            options = contextOptions;
-        }
+    public string Name => options.Name;
 
-        public string Name => options.Name;
+    public DbContextProviderType Provider => DbContextProviderType.PostgreSql;
 
-        public DbContextProviderTypes Provider => DbContextProviderTypes.PostgreSql;
-
-        public System.Data.Common.DbConnection GetDbConnection()
-            => new NpgsqlConnection( options.ConnectionString );
-    }
+    public System.Data.Common.DbConnection GetDbConnection()
+        => new NpgsqlConnection( options.ConnectionString );
 }

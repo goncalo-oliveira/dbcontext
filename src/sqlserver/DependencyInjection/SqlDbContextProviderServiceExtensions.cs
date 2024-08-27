@@ -1,15 +1,14 @@
-using System;
-using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace Microsoft.Extensions.DependencyInjection
+#pragma warning disable IDE0130
+namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130
+
+public static class SqlDbContextProviderServiceExtensions
 {
-    public static class SqlDbContextProviderServiceExtensions
-    {
-        /// <summary>
-        /// Adds a SqlServer context provider and provides a context builder
-        /// </summary>
-        public static IDbContextBuilder AddSqlDbContextProvider( this IServiceCollection services )
-            => services.AddDbContextProvider<SqlDbContext>();
-    }
+    /// <summary>
+    /// Adds a SqlServer context provider and provides a context builder
+    /// </summary>
+    public static IDbContextBuilder AddSqlDbContextProvider( this IServiceCollection services )
+        => services.AddDbContextProvider<SqlDbContext>();
 }

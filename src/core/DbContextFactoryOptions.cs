@@ -1,10 +1,7 @@
-using System;
+namespace System.Data;
 
-namespace System.Data
+internal class DbContextFactoryOptions
 {
-    internal class DbContextFactoryOptions
-    {
-        public Type ContextType { get; set; }
-        public DbContextOptions ContextOptions { get; set; }
-    }
+    public Type? ContextType { get; set; }
+    public DbContextOptions ContextOptions { get; set; } = new();
 }

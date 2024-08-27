@@ -1,18 +1,12 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace System.Data
+#pragma warning disable IDE0130
+namespace System.Data;
+#pragma warning restore IDE0130
+
+internal class DbContextBuilder( Type contextType, IServiceCollection services ) : IDbContextBuilder
 {
-    internal class DbContextBuilder : IDbContextBuilder
-    {
-        public DbContextBuilder( Type contextType, IServiceCollection services )
-        {
-            ContextType = contextType;
-            Services = services;
-        }
+    public Type ContextType { get; } = contextType;
 
-        public Type ContextType { get; }
-
-        public IServiceCollection Services { get; }
-    }
+    public IServiceCollection Services { get; } = services;
 }
