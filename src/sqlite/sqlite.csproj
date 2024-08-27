@@ -8,7 +8,7 @@
     <RootNamespace>System.Data</RootNamespace>
     <AssemblyName>faactory.dbcontext.sqlite</AssemblyName>
     <PackageId>Faactory.DbContext.Sqlite</PackageId>
-    <Version>0.7.0</Version>
+    <Version>0.7.1</Version>
     <Authors>Goncalo Oliveira</Authors>
     <Description>DbContext Sqlite provider</Description>
     <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>
