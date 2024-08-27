@@ -25,7 +25,7 @@ internal class DbCommandBuilder : IDbCommandBuilder
         return this;
     }
 
-    public IDbCommandBuilder AddParameter( string name, object value )
+    public IDbCommandBuilder AddParameter( string name, object? value )
     {
         command.AddParameterWithValue( name, value );
 

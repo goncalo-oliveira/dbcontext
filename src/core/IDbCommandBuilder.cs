@@ -36,7 +36,7 @@ public interface IDbCommandBuilder
     /// </summary>
     /// <param name="name">The parameter name</param>
     /// <param name="value">The parameter value</param>
-    IDbCommandBuilder AddParameter( string name, object value );
+    IDbCommandBuilder AddParameter( string name, object? value );
 
     /// <summary>
     /// Creates the DbCommand instance

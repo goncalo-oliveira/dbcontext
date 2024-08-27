@@ -21,7 +21,7 @@ public static class DbCommandParameterExtensions
     /// </summary>
     /// <param name="name">The parameter name</param>
     /// <param name="value">The parameter value</param>
-    public static DbParameter AddParameterWithValue( this DbCommand command, string name, object value )
+    public static DbParameter AddParameterWithValue( this DbCommand command, string name, object? value )
     {
         /*
         In SQL Server, NULL is an INT by default in all of the scenarios I can think of.
@@ -47,6 +47,7 @@ public static class DbCommandParameterExtensions
             Type t when t == typeof(DateTime) => DbType.DateTime2,
             Type t when t == typeof(DateTimeOffset) => DbType.DateTimeOffset,
             Type t when t == typeof(Guid) => DbType.Guid,
+            Type t when t == typeof(byte[]) => DbType.Binary,
             _ => throw new NotSupportedException($"Unsupported parameter type: {value?.GetType() ?? null}"),
         };
 

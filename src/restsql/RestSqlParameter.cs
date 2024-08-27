@@ -33,6 +33,7 @@ internal sealed class RestSqlParameter : DbParameter
             DbType.AnsiString => $"varchar{size}",
             DbType.AnsiStringFixedLength => $"char{size}",
             DbType.Boolean => "bit",
+            DbType.Binary => $"varbinary{size}",
             DbType.Byte => "tinyint",
             DbType.Currency => "money",
             DbType.Date => "date",
@@ -107,6 +108,7 @@ internal sealed class RestSqlParameter : DbParameter
         {
             Type t when t == typeof(string) => DbType.String,
             Type t when t == typeof(bool) => DbType.Boolean,
+            Type t when t == typeof(byte[]) => DbType.Binary,
             Type t when t == typeof(byte) => DbType.Byte,
             Type t when t == typeof(short) => DbType.Int16,
             Type t when t == typeof(int) => DbType.Int32,
