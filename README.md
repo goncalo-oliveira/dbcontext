@@ -80,7 +80,8 @@ public async Task DoSomethingAsync()
 
 From this point forward, we'll have a `DbConnection` instance ready to use. Please note that all `DbConnection` instances should be properly disposed after use. Most of the ADO implementations will pool connections and not properly disposing them can lead to exceeding the number of open connections (connection leaks).
 
-> NOTICE: Starting with version 0.6, the library has switched to use the `DbConnection` class instead of the `IDbConnection` interface. This was done mostly because the interface doesn't expose the async methods. Since `DbConnection` should be the base class for most (if not all) ADO.NET providers, this transition shouldn't cause any braking changes. Nonetheless, if you're using the `IDbConnection` interface explicitly in your code, you'll have to update it to use the `DbConnection` class instead.
+> [!NOTE]
+> Starting with version 0.6, the library has switched to use the `DbConnection` class instead of the `IDbConnection` interface. This was done mostly because the interface doesn't expose the async methods. Since `DbConnection` should be the base class for most (if not all) ADO.NET providers, this transition shouldn't cause any braking changes. Nonetheless, if you're using the `IDbConnection` interface explicitly in your code, you'll have to update it to use the `DbConnection` class instead.
 
 ## Transactions
 
