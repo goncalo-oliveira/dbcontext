@@ -184,7 +184,7 @@ public async Task QueryAsync()
 }
 ```
 
-The same can be achieved directly from the `IDbContext` instance, however, it's important to acknowledge that this route will open a new connection for each call. If you intend to execute multiple commands in a row, you should first obtain a connection.
+The same can be achieved directly from the `IDbContext` instance, however, it's important to acknowledge that this route will grab a new connection from the pool for each call. If you intend to execute multiple commands in a row, you should first obtain a connection.
 
 ```csharp
 private readonly IDbContext mydb;
@@ -230,7 +230,7 @@ public async Task ExecuteScalarAsync()
 }
 ```
 
-The same can be achieved directly from the `IDbContext` instance. Similarly to the query extensions, it's important to acknowledge that this route will open a new connection for each call. If you intend to execute multiple commands in a row, you should first obtain a connection.
+The same can be achieved directly from the `IDbContext` instance. Similarly to the query extensions, it's important to acknowledge that this route will grab a new connection from the pool for each call. If you intend to execute multiple commands in a row, you should first obtain a connection.
 
 ```csharp
 private readonly IDbContext mydb;
