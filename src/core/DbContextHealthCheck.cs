@@ -12,14 +12,7 @@ internal class DbContextHealthCheck( string contextName, IDbContextFactory dbCon
     {
         try
         {
-            using ( var connection = await db.OpenAsync( cancellationToken ) )
-            {
-                using var command = connection.CreateCommand();
-                
-                command.CommandText = "select 1";
-
-                _ = await command.ExecuteScalarAsync(cancellationToken);
-            }
+            _ = await db.ExecuteScalarAsync( "select 1", cancellationToken );
 
             return HealthCheckResult.Healthy();
         }

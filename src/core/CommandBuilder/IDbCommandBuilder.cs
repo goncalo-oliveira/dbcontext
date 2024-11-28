@@ -1,4 +1,7 @@
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace System.Data;
+#pragma warning restore IDE0130
+
 
 /// <summary>
 /// A fluent DbCommand builder

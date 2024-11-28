@@ -121,7 +121,9 @@ public class RestSqlTests
 
         var dbContext = dbContextFactory.GetDbContext( "restsql" );
 
-        var command = dbContext.BuildCommand()
+        using var connection = dbContext.GetDbConnection();
+
+        var command = connection.BuildCommand()
             .SetTimeout( 5 )
             .AddParameter( "@v_int32", 1 )
             .AddParameter( "@v_int64", 11111111111L )
