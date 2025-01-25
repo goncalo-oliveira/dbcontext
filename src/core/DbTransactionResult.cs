@@ -26,7 +26,7 @@ public readonly struct DbTransactionResult
     /// Throws an <see cref="InvalidOperationException"/> if the transaction operation did not succeed.
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
-    public void ThrowIfNotSucceeded()
+    public void ThrowIfFailed()
     {
         if ( !Succeeded )
         {
