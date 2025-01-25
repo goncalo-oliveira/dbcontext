@@ -8,7 +8,7 @@
     <RootNamespace>System.Data</RootNamespace>
     <AssemblyName>faactory.dbcontext.sqlclient</AssemblyName>
     <PackageId>Faactory.DbContext.SqlClient</PackageId>
-    <Version>0.8.0</Version>
+    <Version>0.8.1</Version>
     <Authors>Goncalo Oliveira</Authors>
     <Description>DbContext SqlServer provider</Description>
     <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>

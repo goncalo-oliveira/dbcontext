@@ -10,7 +10,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>faactory.dbcontext.restsql</AssemblyName>
     <PackageId>Faactory.DbContext.RestSql</PackageId>
-    <Version>0.8.0-preview-1</Version>
+    <Version>0.8.1-preview-1</Version>
     <Authors>Goncalo Oliveira</Authors>
     <Description>DbContext RestSql provider</Description>
     <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>
