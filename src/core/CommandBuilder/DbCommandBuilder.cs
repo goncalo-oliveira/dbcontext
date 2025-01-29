@@ -29,7 +29,7 @@ internal class DbCommandBuilder : IDbCommandBuilder
 
     public IDbCommandBuilder AddParameter( string name, object? value )
     {
-        command.AddParameterWithValue( name, value );
+        command.AddParameterWithValue( name, value ?? DBNull.Value );
 
         return this;
     }
