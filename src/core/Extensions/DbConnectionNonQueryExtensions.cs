@@ -13,11 +13,11 @@ public static class DbConnectionNonQueryExtensions
     /// <param name="connection">The connection to execute the command on</param>
     /// <param name="sql">The SQL command to execute</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
-    public static async Task ExecuteNonQueryAsync( this DbConnection connection, string sql, CancellationToken cancellationToken = default )
+    public static async Task<int> ExecuteNonQueryAsync( this DbConnection connection, string sql, CancellationToken cancellationToken = default )
     {
         var cmd = connection.BuildCommand( sql ).Build();
 
-        await cmd.ExecuteNonQueryAsync( cancellationToken );
+        return await cmd.ExecuteNonQueryAsync( cancellationToken );
     }
 
     /// <summary>
@@ -26,13 +26,13 @@ public static class DbConnectionNonQueryExtensions
     /// <param name="connection">The connection to execute the command on</param>
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
-    public static async Task ExecuteNonQueryAsync( this DbConnection connection, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default )
+    public static async Task<int> ExecuteNonQueryAsync( this DbConnection connection, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default )
     {
         var builder = connection.BuildCommand();
 
         configure( builder );
 
-        await builder.Build().ExecuteNonQueryAsync( cancellationToken );
+        return await builder.Build().ExecuteNonQueryAsync( cancellationToken );
     }
 
     /// <summary>
@@ -42,12 +42,12 @@ public static class DbConnectionNonQueryExtensions
     /// <param name="sql">The SQL command to execute</param>
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
-    public static async Task ExecuteNonQueryAsync( this DbConnection connection, string sql, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default )
+    public static async Task<int> ExecuteNonQueryAsync( this DbConnection connection, string sql, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default )
     {
         var builder = connection.BuildCommand( sql );
 
         configure( builder );
 
-        await builder.Build().ExecuteNonQueryAsync( cancellationToken );
+        return await builder.Build().ExecuteNonQueryAsync( cancellationToken );
     }
 }

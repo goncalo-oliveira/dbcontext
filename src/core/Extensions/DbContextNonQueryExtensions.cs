@@ -9,11 +9,11 @@ public static class DbContextNonQueryExtensions
     /// </summary>
     /// <param name="sql">The SQL command to execute</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
-    public static async Task ExecuteNonQueryAsync( this IDbContext context, string sql, CancellationToken cancellationToken = default )
+    public static async Task<int> ExecuteNonQueryAsync( this IDbContext context, string sql, CancellationToken cancellationToken = default )
     {
         using var connection = await context.OpenAsync( cancellationToken );
 
-        await connection.ExecuteNonQueryAsync( sql, cancellationToken );
+        return await connection.ExecuteNonQueryAsync( sql, cancellationToken );
     }
 
     /// <summary>
@@ -21,11 +21,11 @@ public static class DbContextNonQueryExtensions
     /// </summary>
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
-    public static async Task ExecuteNonQueryAsync( this IDbContext context, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default )
+    public static async Task<int> ExecuteNonQueryAsync( this IDbContext context, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default )
     {
         using var connection = await context.OpenAsync( cancellationToken );
 
-        await connection.ExecuteNonQueryAsync( configure, cancellationToken );
+        return await connection.ExecuteNonQueryAsync( configure, cancellationToken );
     }
 
     /// <summary>
@@ -34,10 +34,10 @@ public static class DbContextNonQueryExtensions
     /// <param name="sql">The SQL command to execute</param>
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
-    public static async Task ExecuteNonQueryAsync( this IDbContext context, string sql, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default )
+    public static async Task<int> ExecuteNonQueryAsync( this IDbContext context, string sql, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default )
     {
         using var connection = await context.OpenAsync( cancellationToken );
 
-        await connection.ExecuteNonQueryAsync( sql, configure, cancellationToken );
+        return await connection.ExecuteNonQueryAsync( sql, configure, cancellationToken );
     }
 }
