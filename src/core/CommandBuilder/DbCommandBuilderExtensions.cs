@@ -9,21 +9,6 @@ public static class DbCommandBuilderExtensions
     /// <summary>
     /// Creates a command builder
     /// </summary>
-    [Obsolete( "Use BuildCommand from DbConnection instead. This method will be removed in future versions." )]
-    public static IDbCommandBuilder BuildCommand( this IDbContext context )
-        => new DbCommandBuilder( context.GetDbConnection() );
-
-    /// <summary>
-    /// Creates a command builder
-    /// </summary>
-    /// <param name="commandText">The command text to initialize the builder with</param>
-    [Obsolete( "Use BuildCommand from DbConnection instead. This method will be removed in future versions." )]
-    public static IDbCommandBuilder BuildCommand( this IDbContext context, string commandText )
-        => new DbCommandBuilder( context.GetDbConnection(), commandText );
-
-    /// <summary>
-    /// Creates a command builder
-    /// </summary>
     public static IDbCommandBuilder BuildCommand( this DbConnection connection )
         => new DbCommandBuilder( connection );
 

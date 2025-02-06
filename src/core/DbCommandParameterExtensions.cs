@@ -35,6 +35,7 @@ public static class DbCommandParameterExtensions
         p.Value = value ?? DBNull.Value;
         p.DbType = valueType switch
         {
+            Type t when t == typeof(DBNull) => DbType.Int32,
             Type t when t == typeof(string) => DbType.String,
             Type t when t == typeof(bool) => DbType.Boolean,
             Type t when t == typeof(byte) => DbType.Byte,
