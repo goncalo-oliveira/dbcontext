@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sqlserver", "src\sqlserver\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "restsql", "src\restsql\restsql.csproj", "{9857218B-E707-4B20-88E2-4269B9892EEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mapper", "src\mapper\mapper.csproj", "{A9412D2B-F6FC-4770-80CE-935645E911B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{9857218B-E707-4B20-88E2-4269B9892EEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9857218B-E707-4B20-88E2-4269B9892EEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9857218B-E707-4B20-88E2-4269B9892EEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9412D2B-F6FC-4770-80CE-935645E911B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9412D2B-F6FC-4770-80CE-935645E911B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9412D2B-F6FC-4770-80CE-935645E911B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9412D2B-F6FC-4770-80CE-935645E911B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +69,7 @@ Global
 		{BA7488BE-10A9-4157-9C03-5757FFC4C18F} = {F2056472-571A-4824-94F6-871764E0F5D8}
 		{1916B554-ADD7-49D0-8903-5CF569D15DB4} = {F2056472-571A-4824-94F6-871764E0F5D8}
 		{9857218B-E707-4B20-88E2-4269B9892EEA} = {F2056472-571A-4824-94F6-871764E0F5D8}
+		{A9412D2B-F6FC-4770-80CE-935645E911B2} = {F2056472-571A-4824-94F6-871764E0F5D8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {79102CBD-7954-4FA9-9861-B9E749D1245C}

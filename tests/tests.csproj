@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\restsql\restsql.csproj" />
+    <ProjectReference Include="..\src\mapper\mapper.csproj" />
   </ItemGroup>
 
 </Project>

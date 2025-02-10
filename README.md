@@ -1,6 +1,6 @@
-# ADO.NET Extensions
+# DbContext
 
-This project contains a set of extensions to help with managing multiple data sources, more specifically, inside a DI scenario.
+This project contains a set of extensions to help with managing multiple database providers, more specifically, inside a DI scenario.
 
 ## Getting started
 
