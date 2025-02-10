@@ -100,6 +100,11 @@ Entities can also be used to build commands. For cases where the command text is
 
 ```csharp
 Person[] people = await connection.QueryAsync<Person>( limit: 10 );
+/*
+SELECT id, name, account_number
+FROM persons
+LIMIT 10
+*/
 ```
 
 The snippet above does the same as the previous one, but it generates the command text for us. However, if we were to attempt to run it, it would fail. The library infers the table name from the entity name by using a naming policy and pluralization rules, which works for most cases, including some irregular pluralizations such as `city` to `cities`. Unfortunately, `person` is one of the exceptions, and the library will translate it to `persons` instead of `people`. To fix this, we can use the `Entity` attribute and specify the table name.
