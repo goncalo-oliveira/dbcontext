@@ -1,6 +1,6 @@
 # DbContext - Mapper
 
-The `DbContext` mapper is a simple and lightweight library that allows us to map our database tables to C# classes.
+The `DbContext` mapper is a simple and lightweight library that allows us to map our query results to objects and from objects to commands. It's designed to be simple and efficient and is built on top of the core library.
 
 ## Concepts
 
