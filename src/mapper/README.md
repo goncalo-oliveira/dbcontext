@@ -294,7 +294,7 @@ public class UnixTimeConverter : DbTypeConverter
 }
 ```
 
-The snippet above shows a simple converter that reads a `long` value from the database and converts it to a `DateTimeOffset`. The `Read` method is called when reading the data from the database, and the `Write` method is called when writing data to the database. To use the converter, we need to decorate the property with the `TypeConverter` attribute.
+The snippet above shows a simple converter that reads a `long` value from the database and converts it to a `DateTimeOffset`. The `Read` method is called when reading the data from the database, and the `Write` method is called when writing data to the database. To use the converter, we need to decorate the property with the `DbTypeConverter` attribute.
 
 ```csharp
 public class Person
