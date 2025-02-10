@@ -181,7 +181,7 @@ var person = new Person
     Name = "John Doe"
 }
 
-await connection.InsertAsync<T>(
+await connection.InsertAsync(
     person
     selector: p => new { p.Name }
 );
@@ -201,7 +201,7 @@ var person = new Person
     Name = "Jane Doe"
 }
 
-await connection.UpdateAsync<T>(
+await connection.UpdateAsync(
     person
     selector: p => new { p.Name }
     where: p => p.Id == 1
@@ -216,7 +216,7 @@ WHERE id = @p_id
 Deleting is somewhat simpler, we just need the `where` clause.
 
 ```csharp
-await connection.DeleteAsync<T>(
+await connection.DeleteAsync<Person>(
     where: p => p.Id == 1
 );
 /*
@@ -247,7 +247,7 @@ var person = new Person
     Name = "Jane Doe"
 }
 
-await connection.UpdateAsync<T>(
+await connection.UpdateAsync(
     person
     selector: p => new { p.Name }
 );
@@ -261,13 +261,13 @@ var person = new Person
     Id = 1
 }
 
-await connection.DeleteAsync<T>(
+await connection.DeleteAsync(
     person
 );
 
 // or simply
 
-await connection.DeleteAsync<T>( 1 );
+await connection.DeleteAsync<Person>( 1 );
 ```
 
 ## Type Converters
