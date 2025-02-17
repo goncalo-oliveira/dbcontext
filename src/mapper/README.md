@@ -107,7 +107,7 @@ LIMIT 10
 */
 ```
 
-The snippet above does the same as the previous one, but it generates the command text for us. However, if we were to attempt to run it, it would fail. The library infers the table name from the entity name by using a naming policy and pluralization rules, which works for most cases, including some irregular pluralizations such as `city` to `cities`. Unfortunately, `person` is one of the exceptions, and the library will translate it to `persons` instead of `people`. To fix this, we can use the `Entity` attribute and specify the table name.
+The snippet above does the same as the previous one, but it generates the command text for us. However, if we were to attempt to run it, it would fail, since the table name `persons` is incorrect. The library infers the table name from the entity name by using a naming policy and pluralization rules, which works for most cases, including some irregular pluralizations such as `city` to `cities`. Unfortunately, `person` is one of the exceptions, and the library will translate it to `persons` instead of `people`. To fix this, we can use the `Entity` attribute and specify the table name.
 
 ```csharp
 [Entity( "people" )]
@@ -279,6 +279,11 @@ public class UnixTimeConverter : DbTypeConverter
 {
     public override object? Read( DbDataReader reader, int ordinal, Type propertyType )
     {
+        if ( reader.IsDBNull( ordinal ) )
+        {
+            return null;
+        }
+
         var value = reader.GetInt64( ordinal );
 
         return DateTimeOffset.FromUnixTimeMilliseconds( value );
@@ -328,7 +333,7 @@ public class Person
 
 ## Limitations
 
-There are some limitations, namely when it comes to using entities to build commands. The library is designed to be simple and lightweight, and as such, it doesn't support complex queries, such as joins or subqueries. For these cases, it's recommended to write the query manually and make use of the mapping functionality only.
+There are some limitations, namely when it comes to using entities to build commands. The library is designed to be simple and lightweight, and as such, it doesn't support complex queries, such as joins or subqueries. For these cases, the alternative is to write the query manually and use the result mapping functionality only.
 
 ```csharp
 var people = await connection.ExecuteQueryAsync<Person>(
