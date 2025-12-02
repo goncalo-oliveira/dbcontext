@@ -8,7 +8,7 @@
     <RootNamespace>System.Data.Mapper</RootNamespace>
     <AssemblyName>faactory.dbcontext.mapper</AssemblyName>
     <PackageId>Faactory.DbContext.Mapper</PackageId>
-    <Version>0.8.5</Version>
+    <Version>0.9.0</Version>
     <Authors>Goncalo Oliveira</Authors>
     <Description>DbContext Mapper package</Description>
     <RepositoryUrl>https://github.com/goncalo-oliveira/dbcontext</RepositoryUrl>
