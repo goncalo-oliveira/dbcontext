@@ -1,6 +1,7 @@
 using System.Data;
 using System.Data.Mapper;
 using System.Data.Common;
+using System.Data.Mapper.Materialization;
 
 namespace tests;
 
@@ -100,6 +101,102 @@ public class DbDataReaderMappingTests
 
         Assert.Equal( 42, result.Id );
         Assert.True( result.Active );
+    }
+
+    [Fact]
+    public void CompiledNumericConversionIsChecked()
+    {
+        using var reader = new FakeDbDataReader(
+            [ "id" ],
+            [ long.MaxValue ]
+        );
+        var map = System.Data.Mapper.DbDataReaderExtensions.CreateMapper<Row>();
+
+        Assert.True( reader.Read() );
+        Assert.Throws<OverflowException>( () => map( reader ) );
+    }
+
+    [Fact]
+    public void CompiledMaterializerLeavesDatabaseNullsAtDefaults()
+    {
+        using var reader = new FakeDbDataReader(
+            [ "id", "display_name" ],
+            [ DBNull.Value, DBNull.Value ]
+        );
+        var map = System.Data.Mapper.DbDataReaderExtensions.CreateMapper<Row>();
+
+        Assert.True( reader.Read() );
+        var result = map( reader );
+
+        Assert.Equal( 0, result.Id );
+        Assert.Null( result.DisplayName );
+    }
+
+    [Theory]
+    [InlineData( (int)MaterializerReadStrategy.TypedGetters )]
+    [InlineData( (int)MaterializerReadStrategy.GetFieldValue )]
+    public void MaterializerReadStrategiesProduceEquivalentResults( int strategyValue )
+    {
+        var strategy = (MaterializerReadStrategy)strategyValue;
+        using var reader = new FakeDbDataReader(
+            [ "id", "display_name" ],
+            [ 7, "seven" ]
+        );
+        var map = System.Data.Mapper.DbDataReaderExtensions.CreateMapper<Row>( strategy );
+
+        Assert.True( reader.Read() );
+        var result = map( reader );
+
+        Assert.Equal( 7, result.Id );
+        Assert.Equal( "seven", result.DisplayName );
+    }
+
+    [Fact]
+    public void MaterializerCacheReusesEntityAndSchemaCombination()
+    {
+        MaterializerCache.Clear();
+
+        using var firstReader = new FakeDbDataReader( [ "id" ], [ 1 ] );
+        using var secondReader = new FakeDbDataReader( [ "id" ], [ 2 ] );
+
+        var first = MaterializerCache.GetOrAdd<Row>( firstReader );
+        var second = MaterializerCache.GetOrAdd<Row>( secondReader );
+
+        Assert.Same( first, second );
+        Assert.Equal( 1, MaterializerCache.Count );
+    }
+
+    [Fact]
+    public void MaterializerCacheIsStrictlyBounded()
+    {
+        MaterializerCache.Clear();
+
+        for ( var index = 0; index <= MaterializerCache.Capacity; index++ )
+        {
+            using var reader = new FakeDbDataReader( [ $"column_{index}" ], [ index ] );
+            MaterializerCache.GetOrAdd<Row>( reader );
+        }
+
+        Assert.Equal( MaterializerCache.Capacity, MaterializerCache.Count );
+        MaterializerCache.Clear();
+    }
+
+    [Fact]
+    public void MaterializerCacheReturnsOneDelegateUnderConcurrency()
+    {
+        MaterializerCache.Clear();
+
+        var materializers = Enumerable.Range( 0, 32 )
+            .AsParallel()
+            .Select( index =>
+            {
+                using var reader = new FakeDbDataReader( [ "id" ], [ index ] );
+                return MaterializerCache.GetOrAdd<Row>( reader );
+            } )
+            .ToArray();
+
+        Assert.Single( materializers.Distinct() );
+        MaterializerCache.Clear();
     }
 
     private sealed class Row

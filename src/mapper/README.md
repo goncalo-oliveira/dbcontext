@@ -51,7 +51,7 @@ Person[] people = await context.ExecuteQueryAsync( // context is an IDbContext i
 );
 ```
 
-Naturally, this comes with a (minimal) cost. The library uses reflection to discover the entity properties, but that metadata and the compiled getters, setters and object factory are cached. The typed `ExecuteQueryAsync<T>` methods also resolve reader ordinals to properties once per query and reuse those bindings for every row.
+Naturally, this comes with a (minimal) cost. The library uses reflection to discover the entity properties, but that metadata is cached. The typed `ExecuteQueryAsync<T>` methods compile a complete row materializer for each entity and reader schema, then reuse it from a bounded cache. The generated materializer constructs the object, reads known database types through typed getters and assigns properties directly.
 
 When a provider's field type differs from the property type, the mapper performs a checked, invariant conversion for common numeric, boolean, enum, identifier, date and time types. For example, SQLite `INTEGER` values exposed as `Int64` can be mapped to `int` or `bool` properties. Use a custom `DbTypeConverter` when provider values require application-specific conversion.
 

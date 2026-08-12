@@ -8,6 +8,7 @@ internal sealed class PropertyMetadata
 {
     public PropertyMetadata( PropertyInfo propertyInfo, DbNamingPolicy namingPolicy )
     {
+        PropertyInfo = propertyInfo;
         PropertyType = propertyInfo.PropertyType;
         PropertyName = propertyInfo.Name;
         CanWrite = propertyInfo.CanWrite;        
@@ -69,6 +70,7 @@ internal sealed class PropertyMetadata
     }
 
     public Type PropertyType { get; }
+    public PropertyInfo PropertyInfo { get; }
     public string PropertyName  { get; }
     public Attribute[] CustomAttributes { get; }
     public string ColumnName { get; }
