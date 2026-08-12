@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Data.Mapper.Sql;
 using System.Text;
 
 namespace System.Data.Mapper.Expressions;
@@ -15,17 +16,23 @@ internal sealed class DbExpressionVisitor : ExpressionVisitor
     private string? lastColumnName = null;
     private PropertyMetadata? lastProperty = null;
 
-    private DbExpressionVisitor( EntityMetadata entityMetadata )
+    private readonly DbSqlDialect dialect;
+
+    private DbExpressionVisitor( EntityMetadata entityMetadata, DbSqlDialect dialect )
     {
         EntityMetadata = entityMetadata;
+        this.dialect = dialect;
     }
 
     private EntityMetadata EntityMetadata { get; }
 
-    public static DbWhereClause GetWhereClause<T>( Expression<Func<T, bool>> expression )
+    public static DbWhereClause GetWhereClause<T>( Expression<Func<T, bool>> expression, DbSqlDialect dialect )
     {
+        DbExpressionValidator.Validate( expression );
+
         var visitor = new DbExpressionVisitor(
-            EntityCache.GetEntityInfo<T>()
+            EntityCache.GetEntityInfo<T>(),
+            dialect
         );
 
         visitor.Visit( visitor.EvaluateExpression( expression.Body ) );
@@ -44,6 +51,9 @@ internal sealed class DbExpressionVisitor : ExpressionVisitor
             Parameters = new ReadOnlyDictionary<string, object>( visitor.parameters )
         };
     }
+
+    internal static DbWhereClause GetWhereClause<T>( Expression<Func<T, bool>> expression )
+        => GetWhereClause( expression, DbSqlDialect.PostgreSql );
 
     /// <summary>
     /// Keeps track of the parameter index for each parameter name to avoid conflicts.
@@ -147,7 +157,7 @@ internal sealed class DbExpressionVisitor : ExpressionVisitor
             lastProperty = GetPropertyMetadata( node.Member );
             lastColumnName = lastProperty.ColumnName;
 
-            whereClause.Append( lastColumnName );
+            whereClause.Append( dialect.QuoteIdentifier( lastColumnName ) );
         }
         else if ( node.Member is FieldInfo fieldInfo )
         {

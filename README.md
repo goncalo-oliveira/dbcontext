@@ -11,7 +11,6 @@ Before we can use the extensions, we need to register the context provider with 
 |PostgreSql|Faactory.DbContext.Npgsql| PostgreSQL driver; uses [Npgsql](https://github.com/npgsql/npgsql) |
 |SqlServer|Faactory.DbContext.SqlClient| SQL Server driver; uses [Microsoft.Data.SqlClient](https://github.com/dotnet/sqlclient) |
 |Sqlite|Faactory.DbContext.Sqlite| SQLite driver; uses [Microsoft.Data.Sqlite](https://github.com/dotnet/efcore/blob/main/src/Microsoft.Data.Sqlite/PACKAGE.md) |
-|SqlServer|Faactory.DbContext.RestSql| SQL Server via restSQL; still experimental |
 
 We'll use *SqlServer* as an example
 
@@ -44,6 +43,8 @@ public class Example
     // ...
 }
 ```
+
+`IDbContextFactory` is registered with a scoped lifetime. Consume it from a scoped or transient service, or resolve it from an explicit service scope.
 
 To construct a new connection, we'll retrieve it from the `IDbContext` instance.
 
@@ -79,18 +80,18 @@ public async Task DoSomethingAsync()
 From this point forward, we'll have a `DbConnection` instance ready to use. Please note that all `DbConnection` instances should be properly disposed after use. Most of the ADO implementations will pool connections and not properly disposing them can lead to exceeding the number of open connections (connection leaks).
 
 > [!NOTE]
-> Starting with version 0.6, the library has switched to use the `DbConnection` class instead of the `IDbConnection` interface. This was done mostly because the interface doesn't expose the async methods. Since `DbConnection` should be the base class for most (if not all) ADO.NET providers, this transition shouldn't cause any braking changes. Nonetheless, if you're using the `IDbConnection` interface explicitly in your code, you'll have to update it to use the `DbConnection` class instead.
+> Starting with version 0.6, the library has switched to use the `DbConnection` class instead of the `IDbConnection` interface. This was done mostly because the interface doesn't expose the async methods. Since `DbConnection` should be the base class for most (if not all) ADO.NET providers, this transition shouldn't cause any breaking changes. Nonetheless, if you're using the `IDbConnection` interface explicitly in your code, you'll have to update it to use the `DbConnection` class instead.
 
 ## Transactions
 
-As an alternative to the `DbConnection.BeginTransaction[Async]` methods, there are extensions available to shorten the amount of code written. The `WithTransaction[Async]` methods take care of opening/reusing a connection, creating a transaction and gracefully disposing of it all when finished.
+As an alternative to the `DbConnection.BeginTransaction[Async]` methods, there is an extension available to shorten the amount of code written. `WithTransactionAsync` opens a connection, creates a transaction and disposes both when finished.
 
 ```csharp
 public async Task DoSomethingAsync()
 {
     await mydb.WithTransactionAsync( async t =>
     {
-        var sqlCommand = t.Connection.CreateCommand();
+        using var sqlCommand = t.Connection.CreateCommand();
 
         // ...
 
@@ -106,12 +107,12 @@ public async Task DoSomethingAsync()
 {
     var result = await mydb.WithTransactionAsync( async t =>
     {
-        var sqlCommand = t.Connection.CreateCommand();
+        using var sqlCommand = t.Connection.CreateCommand();
 
         // ...
 
         await t.CommitAsync();
-    };
+    } );
 
     if ( !result.Succeeded )
     {
@@ -150,7 +151,7 @@ public async Task UseBuilderFromConnectionAsync()
 {
     using var connection = await mydb.OpenAsync();
 
-    var command = connection.BuildCommand()
+    using var command = connection.BuildCommand()
         .SetText( "SELECT * FROM table WHERE id = @id" )
         .AddParameter( "@id", 1 )
         .Build();
@@ -217,7 +218,10 @@ public async Task ExecuteNonQueryAsync()
 {
     using var connection = await mydb.OpenAsync();
 
-    await connection.ExecuteNonQueryAsync( "DELETE FROM table WHERE id = @id", new { id = 1 } );
+    await connection.ExecuteNonQueryAsync(
+        "DELETE FROM table WHERE id = @id",
+        builder => builder.AddParameter( "@id", 1 )
+    );
 }
 
 public async Task ExecuteScalarAsync()
@@ -237,7 +241,10 @@ private readonly IDbContext mydb;
 
 public async Task ExecuteNonQueryAsync()
 {
-    await mydb.ExecuteNonQueryAsync( "DELETE FROM table WHERE id = @id", new { id = 1 } );
+    await mydb.ExecuteNonQueryAsync(
+        "DELETE FROM table WHERE id = @id",
+        builder => builder.AddParameter( "@id", 1 )
+    );
 }
 
 public async Task ExecuteScalarAsync()
@@ -248,4 +255,4 @@ public async Task ExecuteScalarAsync()
 
 ## Compatibility with Object Mappers
 
-The library is fully compatible with most object mappers that use `DbConnection` or `IDbConnection` instances, such as [Dapper](https://github.com/DapperLib/Dapper), [PetaPoco](github.com/CollaboratingPlatypus/PetaPoco) or [Norm.net](https://github.com/vb-consulting/Norm.net).
+The library is fully compatible with most object mappers that use `DbConnection` or `IDbConnection` instances, such as [Dapper](https://github.com/DapperLib/Dapper), [PetaPoco](https://github.com/CollaboratingPlatypus/PetaPoco) or [Norm.net](https://github.com/vb-consulting/Norm.net).

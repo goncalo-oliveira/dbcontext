@@ -18,10 +18,10 @@ public class ObjectUpdateTests
 
         Assert.Equal(
             """
-            UPDATE drivers SET
-                name = @name,
-                license_number = @license_number
-            WHERE id = @p_id
+            UPDATE "drivers" SET
+                "name" = @name,
+                "license_number" = @license_number
+            WHERE "id" = @p_id
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );
@@ -45,9 +45,9 @@ public class ObjectUpdateTests
 
         Assert.Equal(
             """
-            UPDATE drivers SET
-                license_number = @license_number
-            WHERE id = @p_id
+            UPDATE "drivers" SET
+                "license_number" = @license_number
+            WHERE "id" = @p_id
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );
@@ -67,13 +67,29 @@ public class ObjectUpdateTests
 
         Assert.Equal(
             """
-            UPDATE drivers SET
-                license_number = @license_number
+            UPDATE "drivers" SET
+                "license_number" = @license_number
             WHERE
-                license_number = @p_license_number
+                "license_number" = @p_license_number
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );
+    }
+
+    [Fact]
+    public async Task UpdateRejectsSelectorWithOnlyId()
+    {
+        var context = new FakeDbContext();
+        var driver = new Driver { Id = Guid.NewGuid() };
+
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => context.UpdateAsync(
+                entity: driver,
+                selector: x => new { x.Id }
+            )
+        );
+
+        Assert.Equal( "selector", exception.ParamName );
     }
 
     private class Driver

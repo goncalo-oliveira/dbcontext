@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.Mapper;
 using System.Data.Mapper.Expressions;
+using System.Data.Mapper.Sql;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -15,12 +16,6 @@ namespace System.Data;
 public static class DbConnectionQueryExtensions
 {
     /// <summary>
-    /// Determines if the connection is a PostgreSQL connection.
-    /// </summary>
-    internal static bool IsPostgres( this DbConnection connection )
-        => connection.GetType().FullName!.Contains( "Npgsql" );
-
-    /// <summary>
     /// Executes a query and returns the results as an array of objects.
     /// </summary>
     /// <typeparam name="T">The type to map the results to</typeparam>
@@ -30,9 +25,11 @@ public static class DbConnectionQueryExtensions
     /// <param name="limit">The maximum number of results to return</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>An array of objects of type <typeparamref name="T"/></returns>
+    /// <exception cref="NotSupportedException">Thrown when the connection provider or where expression is not supported by generated SQL.</exception>
     public static async Task<T[]> QueryAsync<T>( this DbConnection connection, Expression<Func<T, object>>? selector = null, Expression<Func<T, bool>>? where = null, int? limit = null, CancellationToken cancellationToken = default ) where T : notnull, new()
     {
         var sql = new StringBuilder();
+        var dialect = DbSqlDialect.ForConnection( connection );
 
         var entityInfo = EntityCache.GetEntityInfo<T>();
         var tableName = entityInfo.TableName;
@@ -42,14 +39,11 @@ public static class DbConnectionQueryExtensions
 
         sql.AppendLine( $"SELECT" );
 
-        if ( limit > 0 && !connection.IsPostgres() )
-        {
-            sql.AppendLine( $"TOP {limit}" );
-        }
+        dialect.AppendSelectLimit( sql, limit );
 
         foreach ( var ( property, idx ) in properties.Select( ( property, idx ) => ( property, idx ) ) )
         {
-            sql.Append( $"    {property.ColumnName}" );
+            sql.Append( $"    {dialect.QuoteIdentifier( property.ColumnName )}" );
 
             if ( idx < properties.Length - 1 )
             {
@@ -59,10 +53,10 @@ public static class DbConnectionQueryExtensions
             sql.AppendLine();
         }
 
-        sql.AppendLine( $"FROM {tableName}" );
+        sql.AppendLine( $"FROM {dialect.QuoteIdentifier( tableName )}" );
 
         var whereClause = where != null
-            ? DbExpressionVisitor.GetWhereClause( where )
+            ? DbExpressionVisitor.GetWhereClause( where, dialect )
             : null;
 
         if ( whereClause != null )
@@ -71,10 +65,7 @@ public static class DbConnectionQueryExtensions
                 .AppendLine( $"    {whereClause}" );
         }
 
-        if ( limit > 0 && connection.IsPostgres() )
-        {
-            sql.AppendLine( $"LIMIT {limit}" );
-        }
+        dialect.AppendTrailingLimit( sql, limit );
 
         return await connection.ExecuteQueryAsync<T>(
             sql.ToString(),
@@ -108,6 +99,7 @@ public static class DbConnectionQueryExtensions
     /// <param name="where">An expression to filter the results</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>An object of type <typeparamref name="T"/> or null</returns>
+    /// <exception cref="NotSupportedException">Thrown when the connection provider or where expression is not supported by generated SQL.</exception>
     public static async Task<T?> QuerySingleAsync<T>( this DbConnection connection, Expression<Func<T, bool>>? where, Expression<Func<T, object>>? selector = null, CancellationToken cancellationToken = default ) where T : notnull, new()
     {
         var results = await connection.QueryAsync(
@@ -130,6 +122,7 @@ public static class DbConnectionQueryExtensions
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>An object of type <typeparamref name="T"/> or null</returns>
     /// <exception cref="InvalidOperationException">Thrown when the entity does not have a property marked with the <see cref="EntityIdAttribute"/>.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the connection provider is not supported by generated SQL.</exception>
     public static async Task<T?> QuerySingleAsync<T>( this DbConnection connection, object entityId, Expression<Func<T, object>>? selector = null, CancellationToken cancellationToken = default )  where T : notnull, new()
     {
         var entityIdProperty = EntityCache.GetEntityInfo<T>().IdProperty

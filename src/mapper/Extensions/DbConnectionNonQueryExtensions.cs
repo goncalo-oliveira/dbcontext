@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.Mapper;
 using System.Data.Mapper.Expressions;
+using System.Data.Mapper.Sql;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -23,9 +24,11 @@ public static class DbConnectionNonQueryExtensions
     /// <param name="selector">An expression to select the columns to insert</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
+    /// <exception cref="NotSupportedException">Thrown when the connection provider is not supported by generated SQL.</exception>
     public static async Task<int> InsertAsync<T>( this DbConnection connection, T entity, Expression<Func<T, object>>? selector = null, CancellationToken cancellationToken = default )  where T : notnull, new()
     {
         var sql = new StringBuilder();
+        var dialect = DbSqlDialect.ForConnection( connection );
 
         var entityInfo = EntityCache.GetEntityInfo<T>();
         var tableName = entityInfo.TableName;
@@ -33,11 +36,11 @@ public static class DbConnectionNonQueryExtensions
             ? entityInfo.Properties.FromExpression( selector )
             : entityInfo.Properties.Values;
 
-        sql.AppendLine( $"INSERT INTO {tableName} (" );
+        sql.AppendLine( $"INSERT INTO {dialect.QuoteIdentifier( tableName )} (" );
 
         foreach (var ( property, idx ) in properties.Select( ( property, idx ) => ( property, idx ) ) )
         {
-            sql.Append( $"    {property.ColumnName}" );
+            sql.Append( $"    {dialect.QuoteIdentifier( property.ColumnName )}" );
 
             if ( idx < properties.Length - 1 )
             {
@@ -104,36 +107,42 @@ public static class DbConnectionNonQueryExtensions
     /// <param name="coalesce">Whether to use COALESCE to update only non-null values</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
+    /// <exception cref="ArgumentException">Thrown when the selector contains no non-ID properties.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the entity does not have a property marked with the <see cref="EntityIdAttribute"/>.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the connection provider or where expression is not supported by generated SQL.</exception>
     public static async Task<int> UpdateAsync<T>( this DbConnection connection, T entity, Expression<Func<T, object>>? selector = null, Expression<Func<T, bool>>? where = null, bool coalesce = false, CancellationToken cancellationToken = default ) where T : notnull, new()
     {
         var sql = new StringBuilder();
+        var dialect = DbSqlDialect.ForConnection( connection );
         var entityInfo = EntityCache.GetEntityInfo<T>();
         var tableName = entityInfo.TableName;
         var properties = selector != null
             ? entityInfo.Properties.FromExpression( selector )
             : entityInfo.Properties.Values;
 
-        sql.AppendLine($"UPDATE {tableName} SET");
+        var updateProperties = properties.Where( property => !property.IsEntityId ).ToArray();
+
+        if ( updateProperties.Length == 0 )
+        {
+            throw new ArgumentException( "The update selector must include at least one non-ID property.", nameof( selector ) );
+        }
+
+        sql.AppendLine($"UPDATE {dialect.QuoteIdentifier( tableName )} SET");
 
         // Generate SET clause
-        foreach ( var ( property, idx ) in properties.Select( ( property, idx ) => ( property, idx ) ) )
+        foreach ( var ( property, idx ) in updateProperties.Select( ( property, idx ) => ( property, idx ) ) )
         {
-            if ( property.IsEntityId )
-            {
-                continue;
-            }
-
             if ( coalesce )
             {
-                sql.Append( $"    {property.ColumnName} = COALESCE( @{property.ColumnName}, {property.ColumnName} )" );
+                var columnName = dialect.QuoteIdentifier( property.ColumnName );
+                sql.Append( $"    {columnName} = COALESCE( @{property.ColumnName}, {columnName} )" );
             }
             else
             {
-                sql.Append( $"    {property.ColumnName} = @{property.ColumnName}" );
+                sql.Append( $"    {dialect.QuoteIdentifier( property.ColumnName )} = @{property.ColumnName}" );
             }
 
-            if ( idx < properties.Length - 1 )
+            if ( idx < updateProperties.Length - 1 )
             {
                 sql.Append( ',' );
             }
@@ -143,7 +152,7 @@ public static class DbConnectionNonQueryExtensions
 
         // Generate WHERE clause
         var whereClause = where != null
-            ? DbExpressionVisitor.GetWhereClause( where )
+            ? DbExpressionVisitor.GetWhereClause( where, dialect )
             : null;
 
         if ( whereClause != null )
@@ -156,7 +165,7 @@ public static class DbConnectionNonQueryExtensions
             var entityIdColumnName = entityInfo.IdProperty?.ColumnName
                 ?? throw new InvalidOperationException( "Entity does not have an ID." );
 
-            sql.AppendLine( $"WHERE {entityIdColumnName} = @p_{entityIdColumnName}" );
+            sql.AppendLine( $"WHERE {dialect.QuoteIdentifier( entityIdColumnName )} = @p_{entityIdColumnName}" );
         }
 
         // Execute the query
@@ -165,7 +174,7 @@ public static class DbConnectionNonQueryExtensions
             b =>
             {
                 // Add parameters for SET clause
-                foreach ( var property in properties )
+                foreach ( var property in updateProperties )
                 {
                     var value = property.GetValue( entity );
 
@@ -232,15 +241,17 @@ public static class DbConnectionNonQueryExtensions
     /// <param name="where">An expression to filter the rows to delete</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
+    /// <exception cref="NotSupportedException">Thrown when the connection provider or where expression is not supported by generated SQL.</exception>
     public static async Task<int> DeleteAsync<T>( this DbConnection connection, Expression<Func<T, bool>> where, CancellationToken cancellationToken = default ) where T : notnull, new()
     {
         var sql = new StringBuilder();
+        var dialect = DbSqlDialect.ForConnection( connection );
 
         var entityType = EntityCache.GetEntityTypeName<T>();
 
-        sql.AppendLine( $"DELETE FROM {entityType}" );
+        sql.AppendLine( $"DELETE FROM {dialect.QuoteIdentifier( entityType )}" );
 
-        var whereClause = DbExpressionVisitor.GetWhereClause( where );
+        var whereClause = DbExpressionVisitor.GetWhereClause( where, dialect );
 
         sql.AppendLine( $"WHERE {whereClause}" );
 
@@ -273,9 +284,11 @@ public static class DbConnectionNonQueryExtensions
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
     /// <exception cref="InvalidOperationException">Thrown when the entity does not have a property marked with the <see cref="EntityIdAttribute"/>.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the connection provider is not supported by generated SQL.</exception>
     public static async Task<int> DeleteAsync<T>( this DbConnection connection, object entityId, CancellationToken cancellationToken = default ) where T : notnull, new()
     {
         var sql = new StringBuilder();
+        var dialect = DbSqlDialect.ForConnection( connection );
 
         var entityInfo = EntityCache.GetEntityInfo<T>();
         var tableName = entityInfo.TableName;
@@ -285,8 +298,8 @@ public static class DbConnectionNonQueryExtensions
 
         var entityIdColumnName = entityIdProperty.ColumnName;
 
-        sql.AppendLine( $"DELETE FROM {tableName}" );
-        sql.AppendLine( $"WHERE {entityIdColumnName} = @p_{entityIdColumnName}" );
+        sql.AppendLine( $"DELETE FROM {dialect.QuoteIdentifier( tableName )}" );
+        sql.AppendLine( $"WHERE {dialect.QuoteIdentifier( entityIdColumnName )} = @p_{entityIdColumnName}" );
 
         return await connection.ExecuteNonQueryAsync(
             sql.ToString(),

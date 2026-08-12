@@ -18,10 +18,10 @@ public class ObjectInsertTests
 
         Assert.Equal(
             """
-            INSERT INTO drivers (
-                id,
-                name,
-                license_number
+            INSERT INTO "drivers" (
+                "id",
+                "name",
+                "license_number"
             )
             VALUES (
                 @id,
@@ -45,8 +45,8 @@ public class ObjectInsertTests
 
         Assert.Equal(
             """
-            INSERT INTO drivers (
-                name
+            INSERT INTO "drivers" (
+                "name"
             )
             VALUES (
                 @name

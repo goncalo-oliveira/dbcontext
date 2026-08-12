@@ -44,7 +44,7 @@ Person[] people = await connection.ExecuteQueryAsync( // connection is a DbConne
     sql,
     reader => reader.MapObject<Person>()
 );
-/// or
+// or
 Person[] people = await context.ExecuteQueryAsync( // context is an IDbContext instance
     sql,
     reader => reader.MapObject<Person>()
@@ -69,7 +69,7 @@ To use the library, you need to install the package from NuGet.
 dotnet add package Faactory.DbContext.Mapper
 ```
 
-The library will work with any of the implemented database providers, such as PostgreSQL, SQL Server or SQLite.
+Result mapping works with any ADO.NET provider. The command-generating extensions (`QueryAsync`, `InsertAsync`, `UpdateAsync` and `DeleteAsync`) support PostgreSQL, SQL Server and SQLite; use explicitly written SQL with `ExecuteQueryAsync<T>` for other providers.
 
 ## Entities
 
@@ -101,8 +101,8 @@ Entities can also be used to build commands. For cases where the command text is
 ```csharp
 Person[] people = await connection.QueryAsync<Person>( limit: 10 );
 /*
-SELECT id, name, account_number
-FROM persons
+SELECT "id", "name", "account_number"
+FROM "persons"
 LIMIT 10
 */
 ```
@@ -117,10 +117,10 @@ public class Person
 }
 ```
 
-The naming policy can also be changed by setting the `NamingPolicy` property in the same attribute. By default, `SnakeCase` is used.
+By default, the mapper uses `EntityNamingPolicy.SnakeCase`, so `AccountNumber` maps to `account_number`. The policy can be overridden through the entity's `NamingPolicy` property. For example, selecting `LowerCase` removes casing without inserting separators, so `AccountNumber` maps to `accountnumber`:
 
 ```csharp
-[Entity( "people", NamingPolicy = NamingPolicy.LowerCase )]
+[Entity( "people", NamingPolicy = EntityNamingPolicy.LowerCase )]
 public class Person
 {
     // ...
@@ -149,8 +149,8 @@ Person[] people = await connection.QueryAsync<Person>(
     limit: 10
 );
 /*
-SELECT id, name
-FROM people
+SELECT "id", "name"
+FROM "people"
 LIMIT 10
 */
 ```
@@ -164,12 +164,24 @@ Person[] people = await connection.QueryAsync<Person>(
     limit: 10
 );
 /*
-SELECT id, name
-FROM people
-WHERE id > @p_id
+SELECT "id", "name"
+FROM "people"
+WHERE "id" > @p_id
 LIMIT 10
 */
 ```
+
+Where expressions deliberately support a small, predictable subset:
+
+- Comparisons using `==`, `!=`, `>`, `>=`, `<` and `<=`.
+- Comparisons joined with `&&` and `||`, including parentheses.
+- A direct entity property on the left and a literal, captured variable or independently evaluable method call on the right.
+- `null` equality and inequality checks.
+- A captured-variable null check on the left, which supports optional-filter patterns such as `where: p => name == null || p.Name == name`.
+
+Entity-dependent method calls such as `p.Name.StartsWith( "A" )`, arithmetic on entity properties, unary predicates such as `!p.Active`, nested entity members and property-to-property comparisons are not supported. These forms throw `NotSupportedException`; write the SQL explicitly when a filter needs them.
+
+Generated identifiers are quoted for the active provider. PostgreSQL and SQLite use double quotes and a trailing `LIMIT`; SQL Server uses brackets and `TOP`.
 
 ## Insert, Update and Delete
 
@@ -179,14 +191,14 @@ Inserting and updating is also simple with entities. We can use the `InsertAsync
 var person = new Person
 {
     Name = "John Doe"
-}
+};
 
 await connection.InsertAsync(
-    person
+    person,
     selector: p => new { p.Name }
 );
 /*
-INSERT INTO people (name)
+INSERT INTO "people" ("name")
 VALUES (@name)
 */
 ```
@@ -199,17 +211,17 @@ Updating is similar to inserting. The snippet below shows how to update a person
 var person = new Person
 {
     Name = "Jane Doe"
-}
+};
 
 await connection.UpdateAsync(
-    person
-    selector: p => new { p.Name }
+    person,
+    selector: p => new { p.Name },
     where: p => p.Id == 1
 );
 /*
-UPDATE people
-SET name = @name
-WHERE id = @p_id
+UPDATE "people"
+SET "name" = @name
+WHERE "id" = @p_id
 */
 ```
 
@@ -220,8 +232,8 @@ await connection.DeleteAsync<Person>(
     where: p => p.Id == 1
 );
 /*
-DELETE FROM people
-WHERE id = @p_id
+DELETE FROM "people"
+WHERE "id" = @p_id
 */
 ```
 
@@ -245,10 +257,10 @@ var person = new Person
 {
     Id = 1,
     Name = "Jane Doe"
-}
+};
 
 await connection.UpdateAsync(
-    person
+    person,
     selector: p => new { p.Name }
 );
 ```
@@ -259,7 +271,7 @@ The same can be done for the `DeleteAsync` method.
 var person = new Person
 {
     Id = 1
-}
+};
 
 await connection.DeleteAsync(
     person
@@ -299,7 +311,9 @@ public class UnixTimeConverter : DbTypeConverter
 }
 ```
 
-The snippet above shows a simple converter that reads a `long` value from the database and converts it to a `DateTimeOffset`. The `Read` method is called when reading the data from the database, and the `Write` method is called when writing data to the database. To use the converter, we need to decorate the property with the `DbTypeConverter` attribute.
+The snippet above shows a simple converter that reads a `long` value from the database and converts it to a `DateTimeOffset`. The `Read` method is called when reading the data from the database, and the `Write` method is called when writing data to the database.
+
+To use the converter, we need to decorate the property with the `DbTypeConverter` attribute.
 
 ```csharp
 public class Person
@@ -311,7 +325,7 @@ public class Person
 }
 ```
 
-The converter attribute can also be used at the class level for custom types, which will apply to all properties of that type.
+The converter attribute can also be used at the class level for custom types, which will be applied to all properties with that type.
 
 ```csharp
 [DbTypeConverter( typeof( UnixTimeConverter ) )]

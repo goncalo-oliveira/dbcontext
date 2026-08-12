@@ -15,8 +15,8 @@ public class ObjectDeleteTests
 
         Assert.Equal(
             """
-            DELETE FROM drivers
-            WHERE id = @p_id
+            DELETE FROM "drivers"
+            WHERE "id" = @p_id
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );
@@ -33,11 +33,11 @@ public class ObjectDeleteTests
 
         Assert.Equal(
             """
-            DELETE FROM drivers
-            WHERE id = @p_id
+            DELETE FROM "drivers"
+            WHERE "id" = @p_id
             ---
-            DELETE FROM drivers
-            WHERE id = @p_id
+            DELETE FROM "drivers"
+            WHERE "id" = @p_id
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );

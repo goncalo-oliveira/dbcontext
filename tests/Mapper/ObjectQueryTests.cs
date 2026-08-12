@@ -36,26 +36,26 @@ public class ObjectQueryTests
         Assert.Equal(
             """
             SELECT
-                id,
-                name,
-                license_number
-            FROM drivers
+                "id",
+                "name",
+                "license_number"
+            FROM "drivers"
             ---
             SELECT
-                id,
-                name,
-                license_number
-            FROM drivers
+                "id",
+                "name",
+                "license_number"
+            FROM "drivers"
             WHERE
-                id = @p_id
+                "id" = @p_id
             ---
             SELECT
-                id,
-                name,
-                license_number
-            FROM drivers
+                "id",
+                "name",
+                "license_number"
+            FROM "drivers"
             WHERE
-                id = @p_id AND name = @p_name
+                "id" = @p_id AND "name" = @p_name
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );
@@ -73,9 +73,9 @@ public class ObjectQueryTests
         Assert.Equal(
             """
             SELECT
-                id,
-                name
-            FROM drivers
+                "id",
+                "name"
+            FROM "drivers"
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );
@@ -93,10 +93,10 @@ public class ObjectQueryTests
         Assert.Equal(
             """
             SELECT
-                id,
-                name,
-                license_number
-            FROM drivers
+                "id",
+                "name",
+                "license_number"
+            FROM "drivers"
             LIMIT 10
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
@@ -117,16 +117,16 @@ public class ObjectQueryTests
         Assert.Equal(
             """
             SELECT
-                id,
-                account_id,
-                fleet_id,
-                name,
-                annotations,
-                created_at,
-                updated_at
-            FROM vehicles
+                "id",
+                "account_id",
+                "fleet_id",
+                "name",
+                "annotations",
+                "created_at",
+                "updated_at"
+            FROM "vehicles"
             WHERE
-                id = @p_id
+                "id" = @p_id
             LIMIT 1
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
@@ -148,16 +148,16 @@ public class ObjectQueryTests
         Assert.Equal(
             """
             SELECT
-                id,
-                account_id,
-                fleet_id,
-                name,
-                annotations,
-                created_at,
-                updated_at
-            FROM vehicles
+                "id",
+                "account_id",
+                "fleet_id",
+                "name",
+                "annotations",
+                "created_at",
+                "updated_at"
+            FROM "vehicles"
             WHERE
-                account_id = @p_account_id AND (@p_fleet_id IS NULL OR fleet_id = @p_fleet_id)
+                "account_id" = @p_account_id AND (@p_fleet_id IS NULL OR "fleet_id" = @p_fleet_id)
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );
