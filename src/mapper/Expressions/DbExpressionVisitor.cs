@@ -93,7 +93,12 @@ internal sealed class DbExpressionVisitor : ExpressionVisitor
             }
             else
             {
-                whereClause.Append(" IS NULL");
+                whereClause.Append( node.NodeType switch
+                {
+                    ExpressionType.Equal => " IS NULL",
+                    ExpressionType.NotEqual => " IS NOT NULL",
+                    _ => throw new NotSupportedException( $"Null cannot be used with operation: {node.NodeType}" )
+                } );
             }
         }
         else

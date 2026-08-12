@@ -18,6 +18,7 @@ public static class DbConnectionNonQueryExtensions
     /// Executes an INSERT statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="connection">The database connection.</param>
     /// <param name="entity">An object containing the values to insert</param>
     /// <param name="selector">An expression to select the columns to insert</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
@@ -96,6 +97,7 @@ public static class DbConnectionNonQueryExtensions
     /// Executes an UPDATE statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="connection">The database connection.</param>
     /// <param name="entity">An object containing the values to update</param>
     /// <param name="selector">An expression to select the columns to update</param>
     /// <param name="where">An expression to filter the rows to update</param>
@@ -201,7 +203,7 @@ public static class DbConnectionNonQueryExtensions
                     var entityIdProperty = entityInfo.IdProperty
                         ?? throw new InvalidOperationException( "Entity does not have an ID." );
 
-                    var parameterName = entityIdProperty.ColumnName;
+                    var parameterName = $"p_{entityIdProperty.ColumnName}";
                     var parameterValue = entityIdProperty.GetValue( entity );
 
                     if ( entityIdProperty.DbTypeConverter is not null )
@@ -226,6 +228,7 @@ public static class DbConnectionNonQueryExtensions
     /// Executes a DELETE statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="connection">The database connection.</param>
     /// <param name="where">An expression to filter the rows to delete</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
@@ -265,6 +268,7 @@ public static class DbConnectionNonQueryExtensions
     /// Executes a DELETE statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="connection">The database connection.</param>
     /// <param name="entityId">The ID of the entity to delete</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
@@ -309,6 +313,7 @@ public static class DbConnectionNonQueryExtensions
     /// Executes a DELETE statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="connection">The database connection.</param>
     /// <param name="entity">An object containing the ID of the entity to delete</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
@@ -329,6 +334,8 @@ public static class DbConnectionNonQueryExtensions
     /// </summary>
     private static DbType GetDbType( Type type )
     {
+        type = Nullable.GetUnderlyingType( type ) ?? type;
+
         return type switch {
             Type t when t == typeof( string ) => DbType.String,
             Type t when t == typeof( int ) => DbType.Int32,

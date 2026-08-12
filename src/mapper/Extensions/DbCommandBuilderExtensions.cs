@@ -9,6 +9,7 @@ internal static class DbCommandBuilderExtensions
     /// <summary>
     /// Adds a parameter to the command.
     /// </summary>
+    /// <param name="builder">The command builder.</param>
     /// <param name="name">The name of the parameter.</param>
     /// <param name="value">The value of the parameter.</param>
     public static IDbCommandBuilder AddParameterValue( this IDbCommandBuilder builder, string name, DbParameterValue value )

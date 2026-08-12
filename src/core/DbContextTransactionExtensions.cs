@@ -2,11 +2,15 @@ using System.Data.Common;
 
 namespace System.Data;
 
+/// <summary>
+/// Provides extensions for executing operations within database transactions.
+/// </summary>
 public static class DbContextTransactionExtensions
 {
     /// <summary>
     /// Executes the specified action within a transaction. If an error occurs, the transaction is rolled back.
     /// </summary>
+    /// <param name="context">The database context.</param>
     /// <param name="operation">The operation to execute within the transaction</param>
     /// <param name="isolationLevel">The isolation level of the transaction</param>
     /// <param name="cancellationToken">A cancellation token</param>
@@ -41,6 +45,7 @@ public static class DbContextTransactionExtensions
     /// <summary>
     /// Executes the specified action within a transaction. If an error occurs, the transaction is rolled back.
     /// </summary>
+    /// <param name="context">The database context.</param>
     /// <param name="operation">The operation to execute within the transaction</param>
     /// <param name="isolationLevel">The isolation level of the transaction</param>
     /// <param name="cancellationToken">A cancellation token</param>
@@ -75,6 +80,7 @@ public static class DbContextTransactionExtensions
     /// <summary>
     /// Opens a connection and provides a transaction to work with
     /// </summary>
+    /// <param name="context">The database context.</param>
     /// <param name="action">The action to execute with the transaction</param>
     /// <param name="errorAction">The action to execute if an error occurs</param>
     /// <returns>True if the transaction was successful, false otherwise</returns>
@@ -113,6 +119,7 @@ public static class DbContextTransactionExtensions
     /// <summary>
     /// Opens a connection and provides a transaction to work with
     /// </summary>
+    /// <param name="context">The database context.</param>
     /// <param name="isolationLevel">The transaction's isolation level</param>
     /// <param name="action">The action to execute with the transaction</param>
     /// <param name="errorAction">The action to execute if an error occurs</param>
@@ -152,6 +159,7 @@ public static class DbContextTransactionExtensions
     /// <summary>
     /// Opens a connection and provides a transaction to work with asynchronously
     /// </summary>
+    /// <param name="context">The database context.</param>
     /// <param name="action">The asynchronous action to execute with the transaction</param>
     /// <param name="errorAction">The action to execute if an error occurs</param>
     /// <param name="cancellationToken">The cancellation token</param>
@@ -191,6 +199,7 @@ public static class DbContextTransactionExtensions
     /// <summary>
     /// Opens a connection and provides a transaction to work with asynchronously
     /// </summary>
+    /// <param name="context">The database context.</param>
     /// <param name="action">The asynchronous action to execute with the transaction</param>
     /// <param name="errorAction">The action to execute if an error occurs</param>
     /// <param name="cancellationToken">The cancellation token</param>
@@ -230,6 +239,7 @@ public static class DbContextTransactionExtensions
     /// <summary>
     /// Opens a connection and provides a transaction to work with asynchronously
     /// </summary>
+    /// <param name="context">The database context.</param>
     /// <param name="isolationLevel">The transaction's isolation level</param>
     /// <param name="action">The asynchronous action to execute with the transaction</param>
     /// <param name="errorAction">The action to execute if an error occurs</param>
@@ -270,6 +280,7 @@ public static class DbContextTransactionExtensions
     /// <summary>
     /// Opens a connection and provides a transaction to work with asynchronously
     /// </summary>
+    /// <param name="context">The database context.</param>
     /// <param name="isolationLevel">The transaction's isolation level</param>
     /// <param name="action">The asynchronous action to execute with the transaction</param>
     /// <param name="errorAction">The action to execute if an error occurs</param>

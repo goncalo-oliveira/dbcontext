@@ -4,6 +4,9 @@ using System.Data.Common;
 namespace System.Data;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for executing and mapping queries through a database context.
+/// </summary>
 public static class DbContextQueryExtensions
 {
     /// <summary>

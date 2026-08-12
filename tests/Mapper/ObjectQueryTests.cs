@@ -6,6 +6,19 @@ namespace tests;
 public class ObjectQueryTests
 {
     [Fact]
+    public void GetterOnlyPropertiesHaveSafeMetadata()
+    {
+        var metadata = EntityCache.GetEntityInfo<EntityWithGetterOnlyProperty>();
+
+        var found = metadata.Properties.TryGetProperty( "DisplayName", out var property );
+
+        Assert.True( found );
+        Assert.NotNull( property );
+        Assert.False( property.CanWrite );
+        Assert.Null( property.SetValue );
+    }
+
+    [Fact]
     public async Task Query()
     {
         var context = new FakeDbContext();
@@ -156,6 +169,12 @@ public class ObjectQueryTests
         public Guid? Id { get; set; }
         public string? Name { get; set; }
         public string? LicenseNumber { get; set; }
+    }
+
+    private class EntityWithGetterOnlyProperty
+    {
+        public string Name { get; set; } = "John";
+        public string DisplayName => Name.ToUpperInvariant();
     }
 
     public sealed class Vehicle

@@ -1,4 +1,5 @@
 ﻿using System.Data.Mapper;
+using System.Data.Common;
 using BTelematics.Data;
 
 namespace tests;
@@ -23,6 +24,11 @@ public class ObjectUpdateTests
             WHERE id = @p_id
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
+        );
+
+        Assert.Contains(
+            context.Output.LastCommand!.Parameters.Cast<DbParameter>(),
+            parameter => parameter.ParameterName == "p_id"
         );
     }
 

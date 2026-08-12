@@ -16,6 +16,7 @@ public static class DbContextNonQueryExtensions
     /// Executes an INSERT statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="entity">An object containing the values to insert</param>
     /// <param name="selector">An expression to select the columns to insert</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
@@ -31,6 +32,7 @@ public static class DbContextNonQueryExtensions
     /// Executes an UPDATE statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="entity">An object containing the values to update</param>
     /// <param name="selector">An expression to select the columns to update</param>
     /// <param name="where">An expression to filter the rows to update</param>
@@ -49,6 +51,7 @@ public static class DbContextNonQueryExtensions
     /// Executes a DELETE statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="where">An expression to filter the rows to delete</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
@@ -63,6 +66,7 @@ public static class DbContextNonQueryExtensions
     /// Executes a DELETE statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="entityId">The ID of the entity to delete</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>
@@ -78,6 +82,7 @@ public static class DbContextNonQueryExtensions
     /// Executes a DELETE statement.
     /// </summary>
     /// <typeparam name="T">The type to map the statement from</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="entity">An object containing the ID of the entity to delete</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>The number of rows affected</returns>

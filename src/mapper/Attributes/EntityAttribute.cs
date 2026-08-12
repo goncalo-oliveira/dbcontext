@@ -14,7 +14,7 @@ public sealed class EntityAttribute( string? tableName = null ) : Attribute
     public string? TableName { get; } = tableName;
 
     /// <summary>
-    /// Gets the naming policy used for the entity properties. The default is <see cref="DbNamingPolicy.SnakeCase"/>.
+    /// Gets the naming policy used for the entity properties. The default is <see cref="EntityNamingPolicy.SnakeCase"/>.
     /// </summary>
     public EntityNamingPolicy NamingPolicy { get; init; } = EntityNamingPolicy.SnakeCase;
 
@@ -25,10 +25,4 @@ public sealed class EntityAttribute( string? tableName = null ) : Attribute
             EntityNamingPolicy.LowerCase => DbNamingPolicy.LowerCasePolicy,
             _ => throw new InvalidOperationException( $"The naming policy '{NamingPolicy}' is not supported." )
         };
-}
-
-
-[Entity( NamingPolicy = EntityNamingPolicy.LowerCase)]
-public class Dummy
-{
 }

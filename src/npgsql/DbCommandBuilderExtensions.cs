@@ -3,11 +3,15 @@ using NpgsqlTypes;
 
 namespace System.Data;
 
+/// <summary>
+/// Provides PostgreSQL-specific command-builder extensions.
+/// </summary>
 public static class NpgsqlDbCommandBuilderExtensions
 {
     /// <summary>
     /// Adds a parameter to the command
     /// </summary>
+    /// <param name="builder">The command builder.</param>
     /// <param name="name">The parameter name</param>
     /// <param name="value">The parameter value</param>
     /// <param name="npgsqlDbType">The parameter type</param>

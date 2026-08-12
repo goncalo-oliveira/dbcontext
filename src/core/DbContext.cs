@@ -1,5 +1,8 @@
 namespace System.Data;
 
+/// <summary>
+/// Provides constants shared by database contexts.
+/// </summary>
 public static class DbContext
 {
     /// <summary>

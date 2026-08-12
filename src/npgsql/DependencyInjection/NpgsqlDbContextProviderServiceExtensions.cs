@@ -4,6 +4,9 @@ using Npgsql;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for registering the PostgreSQL context provider.
+/// </summary>
 public static class NpgsqlDbContextProviderServiceExtensions
 {
     /// <summary>

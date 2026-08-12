@@ -47,7 +47,7 @@ public static class DbDataReaderExtensions
                     .Read( reader, fieldOrdinal, property.PropertyType )
                 : reader.GetValue( fieldOrdinal );
 
-            property.SetValue( obj, value );
+            property.SetValue!( obj, value );
         }
 
         return obj;

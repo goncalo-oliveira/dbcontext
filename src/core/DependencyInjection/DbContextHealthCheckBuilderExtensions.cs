@@ -6,11 +6,15 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for registering database-context health checks.
+/// </summary>
 public static class DbContextHealthCheckBuilderExtensions
 {
     /// <summary>
     /// Adds a health check registration for a DbContext
     /// </summary>
+    /// <param name="builder">The health-check builder.</param>
     /// <param name="contextName">The name of the DbContext</param>
     /// <param name="name">The name of the health check</param>
     /// <param name="failureStatus">The status to return when the health check fails</param>

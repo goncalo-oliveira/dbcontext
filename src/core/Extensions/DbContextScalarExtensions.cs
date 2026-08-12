@@ -2,12 +2,16 @@
 namespace System.Data;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for executing scalar commands through a database context.
+/// </summary>
 public static class DbContextScalarExtensions
 {
     /// <summary>
     /// Opens a connection and executes a scalar command
     /// </summary>
     /// <typeparam name="T">The type of the scalar value</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="sql">The SQL command to execute</param>
     /// <param name="dbNullValue">The value to return when the result is DBNull</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
@@ -23,6 +27,7 @@ public static class DbContextScalarExtensions
     /// Opens a connection and executes a scalar command
     /// </summary>
     /// <typeparam name="T">The type of the scalar value</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="dbNullValue">The value to return when the result is DBNull</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
@@ -38,6 +43,7 @@ public static class DbContextScalarExtensions
     /// Opens a connection and executes a scalar command
     /// </summary>
     /// <typeparam name="T">The type of the scalar value</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="sql">The SQL command to execute</param>
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="dbNullValue">The value to return when the result is DBNull</param>

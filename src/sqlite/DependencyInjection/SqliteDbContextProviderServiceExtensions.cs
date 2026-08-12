@@ -4,6 +4,9 @@ using Microsoft.Data.Sqlite;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for registering the SQLite context provider.
+/// </summary>
 public static class SqliteDbContextProviderServiceExtensions
 {
     /// <summary>

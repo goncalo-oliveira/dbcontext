@@ -26,14 +26,14 @@ public sealed class FakeDbCommand( DbConnection connection, DbContextOutput outp
 
     public override int ExecuteNonQuery()
     {
-        output.Log( CommandText );
+        output.Log( CommandText, this );
 
         return 0;
     }
 
     public override object? ExecuteScalar()
     {
-        output.Log( CommandText );
+        output.Log( CommandText, this );
 
         return null;
     }
@@ -49,7 +49,7 @@ public sealed class FakeDbCommand( DbConnection connection, DbContextOutput outp
 
     protected override DbDataReader ExecuteDbDataReader( CommandBehavior behavior )
     {
-        output.Log( CommandText );
+        output.Log( CommandText, this );
 
         return new FakeDbDataReader();
     }

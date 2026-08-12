@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for registering database-context providers.
+/// </summary>
 public static class DbContextProviderServiceExtensions
 {
     /// <summary>
@@ -13,7 +16,7 @@ public static class DbContextProviderServiceExtensions
     /// <typeparam name="TDbContext">The DbContext provider type</typeparam>
     public static IDbContextBuilder AddDbContextProvider<TDbContext>( this IServiceCollection services ) where TDbContext : class, IDbContext
     {
-        services.TryAddSingleton<IDbContextFactory, DbContextFactory>();
+        services.TryAddScoped<IDbContextFactory, DbContextFactory>();
 
         return new DbContextBuilder( typeof( TDbContext ), services );
     }

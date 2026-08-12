@@ -24,6 +24,7 @@ public static class DbConnectionQueryExtensions
     /// Executes a query and returns the results as an array of objects.
     /// </summary>
     /// <typeparam name="T">The type to map the results to</typeparam>
+    /// <param name="connection">The database connection.</param>
     /// <param name="selector">An expression to select the columns to return</param>
     /// <param name="where">An expression to filter the results</param>
     /// <param name="limit">The maximum number of results to return</param>
@@ -102,6 +103,7 @@ public static class DbConnectionQueryExtensions
     /// Executes a query and returns a single result as an object.
     /// </summary>
     /// <typeparam name="T">The type to map the results to</typeparam>
+    /// <param name="connection">The database connection.</param>
     /// <param name="selector">An expression to select the columns to return</param>
     /// <param name="where">An expression to filter the results</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
@@ -122,6 +124,7 @@ public static class DbConnectionQueryExtensions
     /// Executes a query and returns a single result as an object.
     /// </summary>
     /// <typeparam name="T">The type to map the results to</typeparam>
+    /// <param name="connection">The database connection.</param>
     /// <param name="entityId">The ID of the entity to query</param>
     /// <param name="selector">An expression to select the columns to return</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>

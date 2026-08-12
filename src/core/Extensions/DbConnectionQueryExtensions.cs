@@ -5,6 +5,9 @@ namespace System.Data;
 #pragma warning restore IDE0130
 
 
+/// <summary>
+/// Provides extensions for executing and mapping database queries.
+/// </summary>
 public static class DbConnectionQueryExtensions
 {
     /// <summary>

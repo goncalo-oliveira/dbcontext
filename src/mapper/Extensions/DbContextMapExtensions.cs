@@ -14,6 +14,7 @@ public static class DbContextMapExtensions
     /// Executes a query and maps the results to the specified type.
     /// </summary>
     /// <typeparam name="T">The type to map the results to</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="sql">The SQL query to execute</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>An array of objects of type <typeparamref name="T"/></returns>
@@ -24,6 +25,7 @@ public static class DbContextMapExtensions
     /// Executes a query and maps the results to the specified type.
     /// </summary>
     /// <typeparam name="T">The type to map the results to</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>An array of objects of type <typeparamref name="T"/></returns>
@@ -34,6 +36,7 @@ public static class DbContextMapExtensions
     /// Executes a query and maps the results to the specified type.
     /// </summary>
     /// <typeparam name="T">The type to map the results to</typeparam>
+    /// <param name="context">The database context.</param>
     /// <param name="sql">The SQL query to execute</param>
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>

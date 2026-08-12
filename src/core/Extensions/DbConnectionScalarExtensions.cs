@@ -4,6 +4,9 @@ using System.Data.Common;
 namespace System.Data;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for executing scalar database commands.
+/// </summary>
 public static class DbConnectionScalarExtensions
 {
     /// <summary>

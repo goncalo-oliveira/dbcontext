@@ -5,6 +5,9 @@ namespace System.Data;
 #pragma warning restore IDE0130
 
 
+/// <summary>
+/// Provides extensions for executing non-query database commands.
+/// </summary>
 public static class DbConnectionNonQueryExtensions
 {
     /// <summary>
@@ -15,7 +18,7 @@ public static class DbConnectionNonQueryExtensions
     /// <param name="cancellationToken">A token to cancel the operation</param>
     public static async Task<int> ExecuteNonQueryAsync( this DbConnection connection, string sql, CancellationToken cancellationToken = default )
     {
-        var cmd = connection.BuildCommand( sql ).Build();
+        using var cmd = connection.BuildCommand( sql ).Build();
 
         return await cmd.ExecuteNonQueryAsync( cancellationToken );
     }

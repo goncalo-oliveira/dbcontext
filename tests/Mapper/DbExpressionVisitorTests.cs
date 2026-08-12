@@ -77,6 +77,11 @@ public class DbExpressionVisitorTests
         Assert.Equal( 2, parameters.Count );
         Assert.Equal( id, parameters["p_id"] );
         Assert.Equal( DBNull.Value, parameters["p_license_number"] );
+
+        whereClause = DbExpressionVisitor.GetWhereClause<Driver>( x => x.LicenseNumber != null );
+
+        Assert.Equal( "license_number IS NOT NULL", whereClause.ToString() );
+        Assert.Empty( whereClause.Parameters );
     }
 
     private static readonly Guid accountId = new();

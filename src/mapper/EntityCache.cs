@@ -42,6 +42,7 @@ internal static class EntityCache
 
             var properties = allProperties
                 .Where( p => !declaredKeys.Contains( p.Name ) || declaredProperties.Contains( p ) )
+                .Where( p => p.GetIndexParameters().Length == 0 )
                 .Select( p => new PropertyMetadata( p, namingPolicy ) )
                 .ToArray();
 

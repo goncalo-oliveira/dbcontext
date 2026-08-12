@@ -1,4 +1,6 @@
-﻿using System.Data.Mapper;
+﻿using System.Data;
+using System.Data.Common;
+using System.Data.Mapper;
 using BTelematics.Data;
 
 namespace tests;
@@ -52,6 +54,23 @@ public class ObjectInsertTests
             """.Replace( "\r", string.Empty ),
             context.Output.ToString()
         );
+    }
+
+    [Fact]
+    public async Task InsertNullableValueUsesUnderlyingDbType()
+    {
+        var context = new FakeDbContext();
+
+        await context.InsertAsync(
+            entity: new Driver { Id = Guid.NewGuid(), Name = "John Doe" },
+            selector: x => new { x.Id }
+        );
+
+        var parameter = Assert.IsAssignableFrom<DbParameter>(
+            Assert.Single( context.Output.LastCommand!.Parameters.Cast<DbParameter>() )
+        );
+
+        Assert.Equal( DbType.Guid, parameter.DbType );
     }
 
     private class Driver

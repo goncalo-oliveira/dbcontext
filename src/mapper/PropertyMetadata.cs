@@ -51,12 +51,15 @@ internal sealed class PropertyMetadata
 
         var propertyAccess = Expression.Property( castInstance, propertyInfo );
         
-        SetValue = Expression.Lambda<Action<object, object?>>(
-            Expression.Assign( propertyAccess, castValue ),
-            instance,
-            value
-        )
-        .Compile();
+        if ( CanWrite )
+        {
+            SetValue = Expression.Lambda<Action<object, object?>>(
+                Expression.Assign( propertyAccess, castValue ),
+                instance,
+                value
+            )
+            .Compile();
+        }
         
         GetValue = Expression.Lambda<Func<object, object?>>(
             Expression.Convert(propertyAccess, typeof( object ) ), // Convert return type to object
@@ -78,7 +81,7 @@ internal sealed class PropertyMetadata
 
     public Func<object, object?> GetValue { get; }
 
-    public Action<object, object?> SetValue { get; }
+    public Action<object, object?>? SetValue { get; }
 
     public override string ToString()
         => $"{PropertyType} {PropertyName}";

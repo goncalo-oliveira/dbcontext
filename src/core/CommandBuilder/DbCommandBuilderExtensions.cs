@@ -4,6 +4,9 @@ using System.Data.Common;
 namespace System.Data;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides fluent command-building extensions for database connections.
+/// </summary>
 public static class DbCommandBuilderExtensions
 {
     /// <summary>
@@ -15,6 +18,7 @@ public static class DbCommandBuilderExtensions
     /// <summary>
     /// Creates a command builder
     /// </summary>
+    /// <param name="connection">The database connection.</param>
     /// <param name="commandText">The command text to initialize the builder with</param>
     public static IDbCommandBuilder BuildCommand( this DbConnection connection, string commandText )
         => new DbCommandBuilder( connection, commandText );
@@ -22,6 +26,7 @@ public static class DbCommandBuilderExtensions
     /// <summary>
     /// Adds a parameter to the command
     /// </summary>
+    /// <param name="builder">The command builder.</param>
     /// <param name="name">The parameter name</param>
     /// <param name="value">The parameter value</param>
     /// <param name="dbType">The parameter type</param>

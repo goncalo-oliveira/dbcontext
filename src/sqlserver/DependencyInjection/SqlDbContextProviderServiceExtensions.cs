@@ -4,6 +4,9 @@ using Microsoft.Data.SqlClient;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for registering the SQL Server context provider.
+/// </summary>
 public static class SqlDbContextProviderServiceExtensions
 {
     /// <summary>

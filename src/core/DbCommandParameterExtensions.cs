@@ -2,6 +2,9 @@ using System.Data.Common;
 
 namespace System.Data;
 
+/// <summary>
+/// Provides extensions for adding parameters to database commands.
+/// </summary>
 public static class DbCommandParameterExtensions
 {
     /// <summary>
@@ -19,6 +22,7 @@ public static class DbCommandParameterExtensions
     /// <summary>
     /// Adds a parameter with the given name and value to the command
     /// </summary>
+    /// <param name="command">The database command.</param>
     /// <param name="name">The parameter name</param>
     /// <param name="value">The parameter value</param>
     public static DbParameter AddParameterWithValue( this DbCommand command, string name, object? value )
@@ -60,6 +64,7 @@ public static class DbCommandParameterExtensions
     /// <summary>
     /// Adds a parameter with the given name and type to the command
     /// </summary>
+    /// <param name="command">The database command.</param>
     /// <param name="name">The parameter name</param>
     /// <param name="dbType">The parameter type</param>
     public static DbParameter AddParameter( this DbCommand command, string name, DbType dbType )
@@ -77,6 +82,7 @@ public static class DbCommandParameterExtensions
     /// <summary>
     /// Adds a parameter with the given name and type to the command
     /// </summary>
+    /// <param name="command">The database command.</param>
     /// <param name="name">The parameter name</param>
     /// <param name="dbType">The parameter type</param>
     /// <param name="size">The parameter size</param>
@@ -96,6 +102,7 @@ public static class DbCommandParameterExtensions
     /// <summary>
     /// Adds a parameter with the given name and type to the command
     /// </summary>
+    /// <param name="command">The database command.</param>
     /// <param name="name">The parameter name</param>
     /// <param name="dbType">The parameter type</param>
     /// <param name="size">The parameter size</param>

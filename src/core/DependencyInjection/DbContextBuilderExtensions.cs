@@ -4,11 +4,15 @@ using System.Data;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for registering named database contexts.
+/// </summary>
 public static class DbContextBuilderExtensions
 {
     /// <summary>
     /// Adds a named DbContext
     /// </summary>
+    /// <param name="builder">The context builder.</param>
     /// <param name="name">The name of the DbContext</param>
     /// <param name="connectionString">The connection string</param>
     public static IDbContextBuilder AddDbContext( this IDbContextBuilder builder

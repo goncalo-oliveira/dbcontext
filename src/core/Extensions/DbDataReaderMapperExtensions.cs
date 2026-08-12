@@ -4,6 +4,9 @@ using System.Data.Common;
 namespace System.Data;
 #pragma warning restore IDE0130
 
+/// <summary>
+/// Provides extensions for mapping all rows from a database reader.
+/// </summary>
 public static class DbDataReaderMapperExtensions
 {
     /// <summary>

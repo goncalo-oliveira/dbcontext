@@ -1,7 +1,7 @@
 namespace System.Data;
 
 /// <summary>
-/// Represents the result of a <see cref="DbTransaction"/> operation.
+/// Represents the result of a <see cref="System.Data.Common.DbTransaction"/> operation.
 /// </summary>
 public readonly struct DbTransactionResult
 {

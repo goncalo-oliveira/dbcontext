@@ -3,7 +3,7 @@ namespace System.Data.Mapper;
 #pragma warning restore IDE0130
 
 /// <summary>
-/// Marks a property as the entity's identifier. The property must be either a <see cref="string"/> or an <see cref="EntityId"/>.
+/// Marks a property as the entity's identifier.
 /// </summary>
 [AttributeUsage( AttributeTargets.Property )]
 public sealed class EntityIdAttribute : Attribute
