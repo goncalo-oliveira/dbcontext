@@ -18,8 +18,9 @@ public static class DbConnectionMapExtensions
     /// <param name="sql">The SQL query to execute</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>An array of objects of type <typeparamref name="T"/></returns>
+    /// <exception cref="InvalidCastException">Thrown when a database value cannot be converted to the corresponding property type.</exception>
     public static async Task<T[]> ExecuteQueryAsync<T>( this DbConnection connection, string sql, CancellationToken cancellationToken = default ) where T : notnull, new()
-        => await connection.ExecuteQueryAsync( sql, reader => reader.MapObject<T>(), cancellationToken );
+        => await connection.ExecuteQueryAsync( sql, System.Data.Mapper.DbDataReaderExtensions.CreateMapper<T>(), cancellationToken );
 
     /// <summary>
     /// Executes a query and maps the results to the specified type.
@@ -29,8 +30,9 @@ public static class DbConnectionMapExtensions
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>An array of objects of type <typeparamref name="T"/></returns>
+    /// <exception cref="InvalidCastException">Thrown when a database value cannot be converted to the corresponding property type.</exception>
     public static async Task<T[]> ExecuteQueryAsync<T>( this DbConnection connection, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default ) where T : notnull, new()
-        => await connection.ExecuteQueryAsync( configure, reader => reader.MapObject<T>(), cancellationToken );
+        => await connection.ExecuteQueryAsync( configure, System.Data.Mapper.DbDataReaderExtensions.CreateMapper<T>(), cancellationToken );
 
     /// <summary>
     /// Executes a query and maps the results to the specified type.
@@ -41,6 +43,7 @@ public static class DbConnectionMapExtensions
     /// <param name="configure">A delegate to configure the command</param>
     /// <param name="cancellationToken">A token to cancel the operation</param>
     /// <returns>An array of objects of type <typeparamref name="T"/></returns>
+    /// <exception cref="InvalidCastException">Thrown when a database value cannot be converted to the corresponding property type.</exception>
     public static async Task<T[]> ExecuteQueryAsync<T>( this DbConnection connection, string sql, Action<IDbCommandBuilder> configure, CancellationToken cancellationToken = default ) where T : notnull, new()
-        => await connection.ExecuteQueryAsync( sql, configure, reader => reader.MapObject<T>(), cancellationToken );
+        => await connection.ExecuteQueryAsync( sql, configure, System.Data.Mapper.DbDataReaderExtensions.CreateMapper<T>(), cancellationToken );
 }

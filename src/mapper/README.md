@@ -51,7 +51,9 @@ Person[] people = await context.ExecuteQueryAsync( // context is an IDbContext i
 );
 ```
 
-Naturally, this comes with a (minimal) cost. The library needs to use reflection to map the properties of the object to the columns of the result set, but since these mappings are cached, the performance impact is (usually) minimal. The getters and setters are also compiled and cached instead of using reflection, which makes the process faster.
+Naturally, this comes with a (minimal) cost. The library uses reflection to discover the entity properties, but that metadata and the compiled getters, setters and object factory are cached. The typed `ExecuteQueryAsync<T>` methods also resolve reader ordinals to properties once per query and reuse those bindings for every row.
+
+When a provider's field type differs from the property type, the mapper performs a checked, invariant conversion for common numeric, boolean, enum, identifier, date and time types. For example, SQLite `INTEGER` values exposed as `Int64` can be mapped to `int` or `bool` properties. Use a custom `DbTypeConverter` when provider values require application-specific conversion.
 
 Now, instead of using the core's `ExecuteQueryAsync` method and passing the `MapObject<T>` as a delegate, we can do the same by using the typed `ExecuteQueryAsync<T>` method, which does the same thing but is more readable.
 

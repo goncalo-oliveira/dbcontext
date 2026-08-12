@@ -8,15 +8,32 @@ namespace tests;
 
 public sealed class FakeDbDataReader : DbDataReader
 {
+    private readonly string[] columns;
+    private readonly object?[][] rows;
+    private int rowIndex = -1;
+
+    public FakeDbDataReader()
+        : this( [], [] )
+    {
+    }
+
+    public FakeDbDataReader( string[] columns, params object?[][] rows )
+    {
+        this.columns = columns;
+        this.rows = rows;
+    }
+
+    public int GetNameCallCount { get; private set; }
+
     public override object this[int ordinal] => throw new NotImplementedException();
 
     public override object this[string name] => throw new NotImplementedException();
 
     public override int Depth => throw new NotImplementedException();
 
-    public override int FieldCount => throw new NotImplementedException();
+    public override int FieldCount => columns.Length;
 
-    public override bool HasRows => throw new NotImplementedException();
+    public override bool HasRows => rows.Length > 0;
 
     public override bool IsClosed => throw new NotImplementedException();
 
@@ -75,7 +92,11 @@ public sealed class FakeDbDataReader : DbDataReader
     [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)]
     public override Type GetFieldType(int ordinal)
     {
-        throw new NotImplementedException();
+        return rows
+            .Select( row => row[ordinal] )
+            .FirstOrDefault( value => value is not null and not DBNull )
+            ?.GetType()
+            ?? typeof( object );
     }
 
     public override float GetFloat(int ordinal)
@@ -105,7 +126,8 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override string GetName(int ordinal)
     {
-        throw new NotImplementedException();
+        GetNameCallCount++;
+        return columns[ordinal];
     }
 
     public override int GetOrdinal(string name)
@@ -120,7 +142,7 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override object GetValue(int ordinal)
     {
-        throw new NotImplementedException();
+        return rows[rowIndex][ordinal] ?? DBNull.Value;
     }
 
     public override int GetValues(object[] values)
@@ -130,7 +152,7 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override bool IsDBNull(int ordinal)
     {
-        return false;
+        return rows[rowIndex][ordinal] is null or DBNull;
     }
 
     public override bool NextResult()
@@ -140,6 +162,7 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override bool Read()
     {
-        return false;
+        rowIndex++;
+        return rowIndex < rows.Length;
     }
 }
