@@ -41,12 +41,12 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override bool GetBoolean(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToBoolean( GetValue( ordinal ) );
     }
 
     public override byte GetByte(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToByte( GetValue( ordinal ) );
     }
 
     public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length)
@@ -56,7 +56,7 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override char GetChar(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToChar( GetValue( ordinal ) );
     }
 
     public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length)
@@ -66,27 +66,27 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override string GetDataTypeName(int ordinal)
     {
-        throw new NotImplementedException();
+        return GetFieldType( ordinal ).Name;
     }
 
     public override DateTime GetDateTime(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToDateTime( GetValue( ordinal ) );
     }
 
     public override decimal GetDecimal(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToDecimal( GetValue( ordinal ) );
     }
 
     public override double GetDouble(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToDouble( GetValue( ordinal ) );
     }
 
     public override IEnumerator GetEnumerator()
     {
-        throw new NotImplementedException();
+        return rows.GetEnumerator();
     }
 
     [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)]
@@ -101,27 +101,27 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override float GetFloat(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToSingle( GetValue( ordinal ) );
     }
 
     public override Guid GetGuid(int ordinal)
     {
-        throw new NotImplementedException();
+        return GetValue( ordinal ) is Guid guid ? guid : Guid.Parse( GetString( ordinal ) );
     }
 
     public override short GetInt16(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToInt16( GetValue( ordinal ) );
     }
 
     public override int GetInt32(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToInt32( GetValue( ordinal ) );
     }
 
     public override long GetInt64(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToInt64( GetValue( ordinal ) );
     }
 
     public override string GetName(int ordinal)
@@ -137,8 +137,11 @@ public sealed class FakeDbDataReader : DbDataReader
 
     public override string GetString(int ordinal)
     {
-        throw new NotImplementedException();
+        return Convert.ToString( GetValue( ordinal ) )!;
     }
+
+    public override T GetFieldValue<T>( int ordinal )
+        => (T)GetValue( ordinal );
 
     public override object GetValue(int ordinal)
     {

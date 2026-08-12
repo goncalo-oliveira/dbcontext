@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using System.Data.Mapper.Materialization;
 
 #pragma warning disable IDE0130
 namespace System.Data.Mapper;
@@ -26,12 +27,24 @@ public static class DbDataReaderExtensions
             };
         }
 
-        ColumnBinding[]? bindings = null;
+        Func<DbDataReader, T>? materializer = null;
 
         return reader =>
         {
-            bindings ??= CreateBindings<T>( reader );
-            return MapObject<T>( reader, bindings );
+            materializer ??= MaterializerCache.GetOrAdd<T>( reader );
+            return materializer( reader );
+        };
+    }
+
+    internal static Func<DbDataReader, T> CreateMapper<T>( MaterializerReadStrategy strategy )
+        where T : notnull, new()
+    {
+        Func<DbDataReader, T>? materializer = null;
+
+        return reader =>
+        {
+            materializer ??= MaterializerCache.GetOrAdd<T>( reader, strategy );
+            return materializer( reader );
         };
     }
 
@@ -41,6 +54,7 @@ public static class DbDataReaderExtensions
     /// <typeparam name="T">The type of object to map</typeparam>
     /// <returns>An object of type <typeparamref name="T"/></returns>
     /// <exception cref="InvalidCastException">Thrown when a database value cannot be converted to the corresponding property type.</exception>
+    /// <exception cref="OverflowException">Thrown when a numeric database value is outside the range of the corresponding property type.</exception>
     public static T MapObject<T>( this DbDataReader reader ) where T : notnull, new()
     {
         if ( typeof( T ) == typeof( Dictionary<string, object?> ) )
@@ -98,55 +112,6 @@ public static class DbDataReaderExtensions
         return dictionary;
     }
 
-    private static T MapObject<T>( DbDataReader reader, ColumnBinding[] bindings ) where T : notnull, new()
-    {
-        var obj = EntityCache.CreateInstance<T>();
-
-        foreach ( var binding in bindings )
-        {
-            if ( reader.IsDBNull( binding.Ordinal ) )
-            {
-                continue;
-            }
-
-            var property = binding.Property;
-            object? value = property.DbTypeConverter is not null
-                ? EntityCache.GetDbTypeConverter( property.DbTypeConverter )
-                    .Read( reader, binding.Ordinal, property.PropertyType )
-                : reader.GetValue( binding.Ordinal );
-
-            if ( binding.ConversionType is not null )
-            {
-                value = DbValueConverter.Convert( value!, binding.ConversionType );
-            }
-
-            property.SetValue!( obj, value );
-        }
-
-        return obj;
-    }
-
-    private static ColumnBinding[] CreateBindings<T>( DbDataReader reader )
-    {
-        var properties = EntityCache.GetEntityInfo<T>().Properties;
-        var bindings = new List<ColumnBinding>( reader.FieldCount );
-
-        for ( var ordinal = 0; ordinal < reader.FieldCount; ordinal++ )
-        {
-            var columnName = reader.GetName( ordinal );
-            if ( properties.TryGetColumn( columnName, out var property ) && property.CanWrite )
-            {
-                var conversionType = property.DbTypeConverter is null
-                    ? DbValueConverter.GetConversionType( reader.GetFieldType( ordinal ), property.PropertyType )
-                    : null;
-
-                bindings.Add( new ColumnBinding( ordinal, property, conversionType ) );
-            }
-        }
-
-        return bindings.ToArray();
-    }
-
     private static string[] GetColumnNames( DbDataReader reader )
     {
         var columnNames = new string[reader.FieldCount];
@@ -183,9 +148,4 @@ public static class DbDataReaderExtensions
             : DbValueConverter.Convert( value, conversionType );
     }
 
-    private readonly record struct ColumnBinding(
-        int Ordinal,
-        PropertyMetadata Property,
-        Type? ConversionType
-    );
 }
