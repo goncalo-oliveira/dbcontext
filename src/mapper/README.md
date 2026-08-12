@@ -19,7 +19,7 @@ var result = await reader.MapAsync( reader =>
 } );
 ```
 
-The above code snippet shows a simple example for quickly mapping a query result to an object. It's fast and efficient, but it's also a bit verbose and error-prone. The mapper library attempts to simplify this process by providing a more direct way to map the results to objects and from objects to commands. The starting point to explain how it works is the `MapObject<T>` extension method. Instead of using an anonymous object, let's use a class to represent the result.
+The above code snippet shows a fast and direct way to map a query result, but it is also verbose and error-prone. The mapper library automates that work. Instead of using an anonymous object, let's use a class to represent the result.
 
 ```csharp
 public class Person
@@ -29,7 +29,7 @@ public class Person
 }
 ```
 
-Now, let's change the previous code snippet to use the `MapObject<T>` extension method, simplifying the mapping process.
+The simplest mapping API is the `MapObject<T>` extension method:
 
 ```csharp
 using var reader = await command.ExecuteReaderAsync(); // command is a DbCommand instance
@@ -37,31 +37,23 @@ using var reader = await command.ExecuteReaderAsync(); // command is a DbCommand
 Person[] people = await reader.MapAsync( reader => reader.MapObject<Person>() );
 ```
 
-All we are doing is removing the manual mapping and replacing it with a call to the `MapObject<T>` extension method. This will automatically map a row to the `Person` class. The same can be done directly from the `DbConnection` or `IDbContext` instances.
+`MapObject<T>` maps the reader's current row by matching each column to an entity property. Entity metadata and property accessors are cached, but column matching and value conversion still happen for every call. This makes it useful for ad-hoc mapping, small result sets, or code that already manages a reader directly.
 
-```csharp
-Person[] people = await connection.ExecuteQueryAsync( // connection is a DbConnection instance
-    sql,
-    reader => reader.MapObject<Person>()
-);
-// or
-Person[] people = await context.ExecuteQueryAsync( // context is an IDbContext instance
-    sql,
-    reader => reader.MapObject<Person>()
-);
-```
-
-Naturally, this comes with a (minimal) cost. The library uses reflection to discover the entity properties, but that metadata is cached. The typed `ExecuteQueryAsync<T>` methods compile a complete row materializer for each entity and reader schema, then reuse it from a bounded cache. The generated materializer constructs the object, reads known database types through typed getters and assigns properties directly.
-
-When a provider's field type differs from the property type, the mapper performs a checked, invariant conversion for common numeric, boolean, enum, identifier, date and time types. For example, SQLite `INTEGER` values exposed as `Int64` can be mapped to `int` or `bool` properties. Use a custom `DbTypeConverter` when provider values require application-specific conversion.
-
-Now, instead of using the core's `ExecuteQueryAsync` method and passing the `MapObject<T>` as a delegate, we can do the same by using the typed `ExecuteQueryAsync<T>` method, which does the same thing but is more readable.
+For regular queries, use the typed `ExecuteQueryAsync<T>` methods instead:
 
 ```csharp
 Person[] people = await connection.ExecuteQueryAsync<Person>( sql ); // connection is a DbConnection instance
 // or
 Person[] people = await context.ExecuteQueryAsync<Person>( sql ); // context is an IDbContext instance
 ```
+
+The materializer is hidden behind these typed methods. On the first row, the mapper compiles a complete materializer for the entity and reader schema; subsequent rows and matching queries reuse it from a bounded cache. The generated delegate constructs the object, reads known database types through typed getters, performs any required conversions, and assigns properties directly.
+
+When a provider's field type differs from the property type, the mapper performs a checked, invariant conversion for common numeric, boolean, enum, identifier, date and time types. For example, SQLite `INTEGER` values exposed as `Int64` can be mapped to `int` or `bool` properties. Use a custom `DbTypeConverter` when provider values require application-specific conversion.
+
+## Benchmarks
+
+In a 50,000-row, 10-column benchmark, the compiled mapper approached handwritten reader performance while allocating approximately the same amount. With SQLite, raw mapping completed in 59.80 ms, the mapper in 78.58 ms, and Dapper in 88.25 ms. With PostgreSQL, the mapper effectively matched raw mapping at 40.31 ms versus 40.29 ms, ahead of Dapper at 47.51 ms. See the [complete benchmark results and methodology](https://github.com/goncalo-oliveira/dbcontext/blob/main/src/mapper/benchmarks.md).
 
 ## Getting Started
 
