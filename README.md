@@ -253,6 +253,24 @@ public async Task ExecuteScalarAsync()
 }
 ```
 
-## Compatibility with Object Mappers
+## Object mapping
 
-The library is fully compatible with most object mappers that use `DbConnection` or `IDbConnection` instances, such as [Dapper](https://github.com/DapperLib/Dapper), [PetaPoco](https://github.com/CollaboratingPlatypus/PetaPoco) or [Norm.net](https://github.com/vb-consulting/Norm.net).
+For automatic object mapping, install the optional `Faactory.DbContext.Mapper` package.
+
+```bash
+dotnet add package Faactory.DbContext.Mapper
+```
+
+It adds typed query extensions that map rows directly to entities.
+
+```csharp
+Person[] people = await mydb.ExecuteQueryAsync<Person>(
+    "SELECT id, name FROM people"
+);
+```
+
+Typed queries use cached, expression-compiled materializers that approach handwritten reader performance. The package also provides extensions for simple select, insert, update and delete commands.
+
+See the [Mapper documentation](https://github.com/goncalo-oliveira/dbcontext/blob/main/src/mapper/README.md) for usage, limitations and benchmarks.
+
+Other object mappers can be used with the library, as long as they support `DbConnection` or `IDbConnection` instances. Some examples include [Dapper](https://github.com/DapperLib/Dapper) or [PetaPoco](https://github.com/CollaboratingPlatypus/PetaPoco).
